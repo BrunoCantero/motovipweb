@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 import React,{Component} from 'react';
 import {Redirect} from 'react-router-dom';
 
@@ -27,7 +28,7 @@ class Login extends Component{
                     <div className="wrapper">
                         <form className="form-signin"  style={{marginTop:140,borderWidth: 1,borderColor: '#000'}}>       
                             <center>
-                                <img src={require('../styles/img/logo_motovip.jpg')} style={{width:210,height:150,marginBottom:10}}/>
+                                <img src={require('../styles/img/logo.jpg')} style={{width:210,height:210,marginBottom:50, borderRadius: 200,}}/>
                             </center>
                             <input type="text" className="form-control" name="username" placeholder="Usuario.." value="" />
                             <input type="password" className="form-control" name="password" placeholder="Password.." value="" style={{marginTop:10}}/>   
