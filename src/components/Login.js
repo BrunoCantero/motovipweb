@@ -30,9 +30,9 @@ class Login extends Component{
                             <center>
                                 <img src={require('../styles/img/logo.jpg')} style={{width:210,height:210,marginBottom:50, borderRadius: 200,}}/>
                             </center>
-                            <input type="text" className="form-control" name="username" placeholder="Usuario.." value="" />
-                            <input type="password" className="form-control" name="password" placeholder="Password.." value="" style={{marginTop:10}}/>   
-                            <button className="btn btn-lg btn-info btn-block" onClick={()=>this.onLogin()} type="button" style={{marginTop:30}}>Ingresar</button>   
+                            <input type="text" style={{marginBottom:20 ,  height:50 , borderRadius:100}} className="form-control" name="username" placeholder="Usuario.." value="" />
+                            <input type="password"  className="form-control" name="password" placeholder="Password.." value="" style={{marginTop:10, borderRadius:100, height:50}}/>   
+                            <button className="btn btn-lg btn-info btn-block" onClick={()=>this.onLogin()} type="button" style={{marginTop:30 , borderRadius: 100}}>Ingresar</button>   
                         </form>
                     </div>
                 </div>
