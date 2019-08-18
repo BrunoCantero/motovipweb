@@ -1,16 +1,12 @@
-import React ,{Component} from 'react';
+import React,{Component} from 'react';
 import { Modal,Button}   from 'react-bootstrap';
 
-class ListPedidos extends Component{
+class ListCadetes extends Component{
 
-    constructor(props){
-        super(props);
-    }
 
-    
     render(){
         return(
-           <div className="content">
+            <div className="content">
                 <div className="container-fluid">
                     <div className="row">
                         <div className="col-md-12">
@@ -21,9 +17,10 @@ class ListPedidos extends Component{
                                             <tr>
                                                 <th>#</th>
                                                 <th>Cliente</th>
-                                                <th>Fecha</th>
-                                                <th>Tipo</th>
-                                                <th>Total</th>
+                                                <th>Barrio</th>
+                                                <th>Direccion</th>
+                                                <th>Telefono</th>
+                                                <th>Alta</th>
                                                 <th>Detalle</th>
                                             </tr>
                                         </thead>
@@ -33,25 +30,10 @@ class ListPedidos extends Component{
                                                 <td><strong>Alexis quiñonez</strong></td>
                                                 <td>19/05/2018 18:30:00</td>
                                                 <td>2hs</td>
-                                                <td>$120</td>
-                                                <td><center><Button bsStyle="primary"> VER</Button></center></td>
-                                            </tr>
-                                            <tr>
-                                                <td>1</td>
-                                                <td><strong>Gonzalez marcos</strong></td>
-                                                <td>19/05/2018 18:30:00</td>
                                                 <td>2hs</td>
                                                 <td>$120</td>
                                                 <td><center><Button bsStyle="primary"> VER</Button></center></td>
-                                            </tr>
-                                            <tr>
-                                                <td>1</td>
-                                                <td><strong>Bruno cantero</strong></td>
-                                                <td>19/05/2018 18:30:00</td>
-                                                <td>2hs</td>
-                                                <td>$120</td>
-                                                <td><center><Button bsStyle="primary"> VER</Button></center></td>
-                                            </tr>    
+                                            </tr> 
                                         </tbody>        
                                     </table>
                                 </div>
@@ -64,4 +46,5 @@ class ListPedidos extends Component{
     }
 }
 
-export default ListPedidos;
+
+export default ListCadetes;

@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React,{Component} from 'react';
 import {Redirect} from 'react-router-dom';
+import Button from 'antd/es/button';
 
 class Login extends Component{
 
@@ -16,6 +17,8 @@ class Login extends Component{
             redirectDashboard:true
         })
     }
+
+    
 
     render(){
         if(this.state.redirectDashboard){

@@ -20,14 +20,20 @@ class ListModulos extends Component{
                     </div>
                     <ul className="nav">
                         <li className="nav-item">
-                            <NavLink  exac to='/caja' className="nav-link" activeStyle={{ color: 'gray',backgroundColor:'#fff',fontWeight:'bold' }}>
+                            <NavLink  exac to='/dashboard' className="nav-link" activeStyle={{ color: 'gray',backgroundColor:'#fff',fontWeight:'bold' }}>
                                 <i className="nc-icon nc-notes"></i>
                                 <p>PEDIDOS</p>
                             </NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink  exac to='/caja' className="nav-link" activeStyle={{ color: 'gray',backgroundColor:'#fff',fontWeight:'bold' }}>
+                            <NavLink  exac to='/clientes' className="nav-link" activeStyle={{ color: 'gray',backgroundColor:'#fff',fontWeight:'bold' }}>
                                 <i className="nc-icon nc-circle-09"></i>
+                                <p>CLIENTES</p>
+                            </NavLink>
+                        </li>
+                        <li className="nav-item">
+                            <NavLink  exac to='/cadetes' className="nav-link" activeStyle={{ color: 'gray',backgroundColor:'#fff',fontWeight:'bold' }}>
+                                <i className="nc-icon nc-badge"></i>
                                 <p>CADETES</p>
                             </NavLink>
                         </li>
