@@ -1,5 +1,6 @@
 import React,{Component} from 'react';
 import { Modal,Button}   from 'react-bootstrap';
+import Lottie            from 'react-lottie';
 
 class ListClientes extends Component{
 
@@ -7,8 +8,12 @@ class ListClientes extends Component{
         super(props);
         this.hiddenModalCliente = this.hiddenModalCliente.bind(this);
         this.verDetalleCliente  = this.verDetalleCliente.bind(this);
+        this.hiddenModalNuevoCliente = this.hiddenModalNuevoCliente.bind(this);
         this.state={
-            showModalCliente:false
+            showModalCliente:false,
+            showModalNuevoCliente:false,
+            loadingGuardarCliente : false,
+            showFormNuevoCliente : true
         }
     }
 
@@ -25,11 +30,76 @@ class ListClientes extends Component{
         })
     }
 
+    hiddenModalNuevoCliente(){
+        this.setState({
+            showModalNuevoCliente:false
+        })
+    }
+
+    getClientes(){
+        fetch('http://localhost/v1/empleados')
+        .then(response=>response.json())
+        .then(data=>{
+            console.log(data);
+        })
+        .catch((error)=>{
+            console.log(error);
+        })
+    }
+
+    guardarNuevoCliente(){
+        this.setState({
+            showLoadingClienteNuevo:true,
+            showFormNuevoCliente:false
+        })
+    }
+
+    modalNuevoCliente(){
+        this.setState({
+            showModalNuevoCliente:true,
+            showLoadingClienteNuevo:false,
+            showFormNuevoCliente:true
+        })
+    }
+
+    componentDidMount(){
+        this.getClientes();
+    }
+
     render(){
+        const defaultLoading = {
+            loop: true,
+            autoplay: true,
+            animationData: require('../lottie/1918-loading-and-done.json'),
+            rendererSettings: {
+              preserveAspectRatio: 'xMidYMid slice',
+            },
+        }
+
         return(
             <div className="content">
                 <div className="container-fluid">
-                    <div className="row">
+                    <div className="row">  
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="col-md-12 pr-1">
+                                    <div class="form-group">
+                                        <label>Buscar cliente</label>
+                                        <input type="text" class="form-control" placeholder="Apellido.." value=""/>
+                                    </div>
+                                </div>    
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="col-md-12 pr-1">
+                                    <div class="form-group">
+                                        <label>Alta cliente</label><br/>
+                                        <Button variant="btn btn-success"  onClick={()=>this.modalNuevoCliente()}> Nuevo cliente</Button>
+                                    </div>
+                                </div>   
+                            </div>
+                        </div>
                         <div className="col-md-12">
                             <div class="card strpied-tabled-with-hover">
                                 <div class="card-body table-full-width table-responsive" id="printablediv">
@@ -60,7 +130,7 @@ class ListClientes extends Component{
                         </div>
                     </div>
                 </div>
-                <Modal  show={this.state.showModalCliente} style={{marginTop:-120}} size="lg" onHide={this.hiddenModalCliente} >
+                <Modal  show={this.state.showModalCliente} style={{marginTop:-210}} size="lg" onHide={this.hiddenModalCliente} >
                     <Modal.Header closeButton>
                         <Modal.Title id="contained-modal-title-vcenter">
                             <strong>Cliente Motovip</strong>
@@ -122,9 +192,84 @@ class ListClientes extends Component{
                     </Modal.Body>
                     <Modal.Footer>
                         <Button onClick={()=>this.hiddenModalCliente()} variant="secondary" style={{marginTop:10}}>Salir</Button>
+                        <Button onClick={()=>this.imprimirPedido()} variant="btn btn-danger" style={{marginTop:10}}>Eliminar cliente</Button>
                         <Button onClick={()=>this.imprimirPedido()} variant="btn btn-success" style={{marginTop:10}}>Guardar</Button>
                     </Modal.Footer>
-                </Modal>         
+                </Modal>   
+                <Modal  show={this.state.showModalNuevoCliente} style={{marginTop:-210}} size="lg" onHide={this.hiddenModalNuevoCliente} >
+                    <Modal.Header closeButton>
+                        <Modal.Title id="contained-modal-title-vcenter">
+                            <strong>Nuevo cliente</strong>
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body> 
+                        <center>
+                            <img class="avatar border-gray" style={{height:50}} src="https://randomuser.me/api/portraits/women/87.jpg" alt="..."/>
+                        </center>
+                        <center>
+                            <h4 style={{marginTop:-4}}>Nombre cliente</h4>
+                        </center>
+                        <div className="card">
+                            {
+                                this.state.showLoadingClienteNuevo &&    
+                                <div>
+                                    <center><Lottie options={defaultLoading} height={150} width={'15%'} /></center>
+                                    <center><h4 style={{color:'black'}}>Guardando..</h4></center>
+                                </div> 
+                            }
+                            {this.state.showFormNuevoCliente &&
+                                <div className="card-body">
+                                    <form>
+                                        <div className="row">
+                                            <div className="col-md-6 pr-1">
+                                                <div class="form-group">
+                                                    <label>Apellido</label>
+                                                    <input type="text" class="form-control" placeholder="Company" value=""/>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 pl-1">
+                                                <div class="form-group">
+                                                    <label>Nombre</label>
+                                                    <input type="text" class="form-control" placeholder="Last Name" value=""/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="row">
+                                            <div className="col-md-6 pr-1">
+                                                <div class="form-group">
+                                                    <label>Barrio</label>
+                                                    <select className="form-control">
+                                                        <option value="1">La colonia</option>
+                                                        <option value="2">Villa del rosario</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6 pl-1">
+                                                <div class="form-group">
+                                                    <label>Direccion</label>
+                                                    <input type="text" class="form-control" placeholder="Last Name" value=""/>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12">
+                                                <div class="form-group">
+                                                    <label>Observaciones</label>
+                                                    <textarea class="form-control"  style={{height:100}} placeholder="..">
+                                                    </textarea>    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>   
+                            }                   
+                        </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button onClick={()=>this.hiddenModalNuevoCliente()} variant="secondary"       style={{marginTop:10}}>Salir</Button>
+                        <Button onClick={()=>this.guardarNuevoCliente()}     variant="btn btn-success" style={{marginTop:10}}>Guardar cliente</Button>
+                    </Modal.Footer>
+                </Modal>       
             </div>
         )
     }

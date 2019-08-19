@@ -9,6 +9,26 @@ class ListCadetes extends Component{
             <div className="content">
                 <div className="container-fluid">
                     <div className="row">
+                        <div class="col-md-8">
+                            <div class="card">
+                                <div class="col-md-12 pr-1">
+                                    <div class="form-group">
+                                        <label>Buscar cadetes</label>
+                                        <input type="text" class="form-control" placeholder="Apellido.." value=""/>
+                                    </div>
+                                </div>    
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="col-md-12 pr-1">
+                                    <div class="form-group">
+                                        <label>Alta cadete</label><br/>
+                                        <Button variant="btn btn-info"  onClick={()=>this.modalNuevoCliente()}> Nuevo cadete</Button>
+                                    </div>
+                                </div>   
+                            </div>
+                        </div>
                         <div className="col-md-12">
                             <div class="card strpied-tabled-with-hover">
                                 <div class="card-body table-full-width table-responsive" id="printablediv">
