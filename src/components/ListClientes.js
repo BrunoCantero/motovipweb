@@ -26,6 +26,9 @@ class ListClientes extends Component{
     }
 
     render(){
+        //destructured props and states
+        const { showModalCliente } = this.state;
+
         return(
             <div className="content">
                 <div className="container-fluid">
@@ -60,7 +63,7 @@ class ListClientes extends Component{
                         </div>
                     </div>
                 </div>
-                <Modal  show={this.state.showModalCliente} style={{marginTop:-120}} size="lg" onHide={this.hiddenModalCliente} >
+                <Modal  show={showModalCliente} style={{marginTop:-120}} size="lg" onHide={this.hiddenModalCliente} >
                     <Modal.Header closeButton>
                         <Modal.Title id="contained-modal-title-vcenter">
                             <strong>Cliente Motovip</strong>

@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-constructor */
 import React ,{Component} from 'react';
 import { Modal,Button}   from 'react-bootstrap';
 
