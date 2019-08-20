@@ -67,10 +67,7 @@ class ListClientes extends Component{
     }
 
     render(){
-<<<<<<< HEAD
-        //destructured props and states
-        const { showModalCliente } = this.state;
-=======
+
         const defaultLoading = {
             loop: true,
             autoplay: true,
@@ -79,8 +76,6 @@ class ListClientes extends Component{
               preserveAspectRatio: 'xMidYMid slice',
             },
         }
->>>>>>> 2983bff5b3c96b1e4ab3f94b9b9332f4281efda7
-
         return(
             <div className="content">
                 <div className="container-fluid">
@@ -116,6 +111,7 @@ class ListClientes extends Component{
                                                 <th>Barrio</th>
                                                 <th>Direccion</th>
                                                 <th>Alta</th>
+                                                <th>Telefono</th>
                                                 <th>Detalle</th>
                                             </tr>
                                         </thead>
@@ -126,6 +122,7 @@ class ListClientes extends Component{
                                                 <td>Villa del rosario</td>
                                                 <td>Ayacucho 4445</td>
                                                 <td>19/07/2019 18:30hs</td>
+                                                <td>3704095311</td>
                                                 <td><center><Button bsStyle="primary" onClick={()=>this.verDetalleCliente()}> VER</Button></center></td>
                                             </tr> 
                                         </tbody>        
@@ -135,11 +132,8 @@ class ListClientes extends Component{
                         </div>
                     </div>
                 </div>
-<<<<<<< HEAD
-                <Modal  show={showModalCliente} style={{marginTop:-120}} size="lg" onHide={this.hiddenModalCliente} >
-=======
+
                 <Modal  show={this.state.showModalCliente} style={{marginTop:-210}} size="lg" onHide={this.hiddenModalCliente} >
->>>>>>> 2983bff5b3c96b1e4ab3f94b9b9332f4281efda7
                     <Modal.Header closeButton>
                         <Modal.Title id="contained-modal-title-vcenter">
                             <strong>Cliente Motovip</strong>
