@@ -4,6 +4,11 @@ import ListClientes  from './ListClientes.js';
 import NavBar from './NavBar.js';
 
 class Clientes extends Component{
+
+    constructor(props){
+        super(props);
+    }
+
     render(){
         return(
             <div className="wrapper">

@@ -43,7 +43,7 @@ class Login extends Component{
                 mensajeUsuario:'Debes ingresar el password'
             })
         }else{
-            fetch("https://2ba83041.ngrok.io/users/login",{
+            fetch("http://localhost:8069/users/login",{
                 method:"POST",
                 headers:{
                     "Accept" : "application/json",
@@ -75,6 +75,10 @@ class Login extends Component{
                     sessionStorage.setItem('username',username);
                     sessionStorage.setItem('apitoken',api_token);
                     sessionStorage.setItem('roluser',rol_user);
+
+                    this.setState({
+                        redirectDashboard:true
+                    })
                 }
             })
             .catch((error)=>{
@@ -108,7 +112,7 @@ class Login extends Component{
                     <div className="wrapper">
                         <form className="form-signin"  style={{marginTop:120,borderWidth: 1,borderColor: '#000'}}>       
                             <center>
-                                <img src={require('../styles/img/logo.jpg')} style={{width:210,height:210,marginBottom:50, borderRadius: 200,}}/>
+                                <h1>DATA</h1>
                             </center>
                             <input type="text"  className="form-control" name="username" placeholder="Usuario.." value={this.state.username}  
                                 onChange={this.handleChange.bind(this)} style={{marginBottom:20 ,  height:50 , borderRadius:100}}/>

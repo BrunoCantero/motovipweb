@@ -6,14 +6,17 @@ class ListClientes extends Component{
 
     constructor(props){
         super(props);
-        this.hiddenModalCliente = this.hiddenModalCliente.bind(this);
-        this.verDetalleCliente  = this.verDetalleCliente.bind(this);
+        this.hiddenModalCliente      = this.hiddenModalCliente.bind(this);
+        this.verDetalleCliente       = this.verDetalleCliente.bind(this);
         this.hiddenModalNuevoCliente = this.hiddenModalNuevoCliente.bind(this);
+        const apitoken               = sessionStorage['apitoken'];
         this.state={
             showModalCliente:false,
             showModalNuevoCliente:false,
             loadingGuardarCliente : false,
-            showFormNuevoCliente : true
+            showFormNuevoCliente : true,
+            apiToken :apitoken,
+            listadoClientes : []
         }
     }
 
@@ -36,11 +39,22 @@ class ListClientes extends Component{
         })
     }
 
+
+
     getClientes(){
-        fetch('http://localhost/v1/empleados')
+        fetch('http://localhost:8069/clientes',{
+            method:'GET',
+            headers:{
+                "Content-Type":"application/json"
+                //"Access-Control-Allow-Headers": "Content-type,Authorization",
+                //"api_token":"kEHF9fHTim345lyURxTwXbQYK8eGT0c74I5mhTP6Xq0Jo0vqhwwtATw6OaBr"
+            }
+        })
         .then(response=>response.json())
         .then(data=>{
-            console.log(data);
+            this.setState({
+                listadoClientes: data
+            })
         })
         .catch((error)=>{
             console.log(error);
@@ -116,15 +130,17 @@ class ListClientes extends Component{
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <tr>
-                                                <td>1</td>
-                                                <td><strong>Alexis quiñonez</strong></td>
-                                                <td>Villa del rosario</td>
-                                                <td>Ayacucho 4445</td>
-                                                <td>19/07/2019 18:30hs</td>
-                                                <td>3704095311</td>
-                                                <td><center><Button bsStyle="primary" onClick={()=>this.verDetalleCliente()}> VER</Button></center></td>
-                                            </tr> 
+                                            {this.state.listadoClientes.map((clientes,item)=>
+                                                <tr key={item+1}>
+                                                    <td>{item+1}</td>
+                                                    <td><strong>{clientes.name}</strong></td>
+                                                    <td>Villa del rosario</td>
+                                                    <td>Ayacucho 4445</td>
+                                                    <td>19/07/2019 18:30hs</td>
+                                                    <td>3704095311</td>
+                                                    <td><center><Button bsStyle="primary" onClick={()=>this.verDetalleCliente()}> VER</Button></center></td>
+                                                </tr>
+                                            )}
                                         </tbody>        
                                     </table>
                                 </div>
