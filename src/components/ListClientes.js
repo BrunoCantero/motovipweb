@@ -20,7 +20,9 @@ class ListClientes extends Component{
             addressCliente : '',
             phoneNumberCliente : '',
             descriptionCliente : '',
-            listadoClientes : []
+            listadoClientes : [],
+            listadoClientesBuscados:[],
+            buscarCliente:''
         }
     }
 
@@ -52,7 +54,7 @@ class ListClientes extends Component{
             loading:true,
             showListadoClientes:false
         })
-        fetch('https://fec9b687.ngrok.io/clientes',{
+        fetch('http://localhost:8000/clientes',{
             method:'GET',
             headers:{
                 "Content-Type":"application/json; charset=utf-8",
@@ -63,6 +65,7 @@ class ListClientes extends Component{
         .then(data=>{
             this.setState({
                 listadoClientes: data,
+                listadoClientesBuscados:data,
                 loading:false,
                 showListadoClientes:true
             })
@@ -73,7 +76,11 @@ class ListClientes extends Component{
     }
 
     guardarNuevoCliente(){  
-        fetch('https://fec9b687.ngrok.io/clientes',{
+        this.setState({
+            showLoadingClienteNuevo:true,
+            showFormNuevoCliente:false
+        })
+        fetch('http://localhost:8000/clientes',{
             method:"POST",
             headers:{
                 "Accept":"application/json",
@@ -83,32 +90,58 @@ class ListClientes extends Component{
             body:JSON.stringify({
                 name          : this.state.nameCliente,
                 adress        : this.state.addressCliente,
-                phone_number  : this.state.addressCliente,
+                phone_number  : this.state.phoneNumberCliente,
                 description   :this.state.descriptionCliente
             })
         })
         .then((response)=>response.json())
         .then((responseJson)=>{
-            console.log(responseJson)
-            this.getClientes()
+            this.sleep(4000).then(() => {
+                // Do something after the sleep!
+                this.setState({
+                    showLoadingClienteNuevo:false,
+                    showFormNuevoCliente:false
+                })
+                this.getClientes();
+                this.hiddenModalNuevoCliente();
+            })
         })
         .catch((error)=>{
             console.log(error);
         })
-
-        /*this.setState({
-            showLoadingClienteNuevo:true,
-            showFormNuevoCliente:false
-        })*/
     }
+
+
+    sleep(time) {
+        return new Promise((resolve) => setTimeout(resolve, time));
+    }
+
 
     modalNuevoCliente(){
         this.setState({
             showModalNuevoCliente:true,
             showLoadingClienteNuevo:false,
-            showFormNuevoCliente:true
+            showFormNuevoCliente:true,
+            nameCliente:'',
+            addressCliente:'',
+            phoneNumberCliente:'',
+            descriptionCliente:''
         })
     }
+
+    getClientesSearch(){
+        const newData = this.state.listadoClientesBuscados.filter((item)=>{
+            const itemData = item.name.toUpperCase();
+            const textData = this.state.buscarCliente.toUpperCase();
+            return itemData.indexOf(textData)>-1;
+        });
+
+        this.setState({
+            listadoClientes:newData
+        })
+    }
+
+    
 
     componentDidMount(){
         this.getClientes();
@@ -142,7 +175,20 @@ class ListClientes extends Component{
                                 <div class="col-md-12 pr-1">
                                     <div class="form-group">
                                         <label>Buscar cliente</label>
-                                        <input type="text" class="form-control" placeholder="Apellido.." value=""/>
+                                        <input type="text" class="form-control" name="buscarCliente" placeholder="Apellido.."
+                                        onKeyPress={event=>{
+                                            this.getClientesSearch()
+                                            if(this.state.buscarCliente.length === 0 || this.state.buscarCliente.length<2){
+                                                this.setState({
+                                                    listadoClientes:this.state.listadoClientesBuscados
+                                                })
+                                            }
+                                            
+                                        }}
+                                        value={this.state.buscarCliente}
+                                        onChange={this.handleChange.bind(this)}
+                                        
+                                        />
                                     </div>
                                 </div>    
                             </div>
@@ -170,7 +216,7 @@ class ListClientes extends Component{
                                                 <tr>
                                                     <th>#</th>
                                                     <th>Cliente</th>
-                                                    <th>Barrio</th>
+                                                    <th>Alta</th>
                                                     <th>Direccion</th>
                                                     <th>Telefono</th>
                                                     <th>Detalle</th>
@@ -181,9 +227,9 @@ class ListClientes extends Component{
                                                     <tr key={item+1}>
                                                         <td>{item+1}</td>
                                                         <td><strong>{clientes.name}</strong></td>
-                                                        <td>Villa del rosario</td>
-                                                        <td>Ayacucho 4445</td>
-                                                        <td>3704095311</td>
+                                                        <td>{clientes.created_at}</td>
+                                                        <td>{clientes.adress}</td>
+                                                        <td>{clientes.phone_number}</td>
                                                         <td><center><Button bsStyle="primary" onClick={()=>this.verDetalleCliente()}> VER</Button></center></td>
                                                     </tr>
                                                 )}
@@ -270,10 +316,10 @@ class ListClientes extends Component{
                     </Modal.Header>
                     <Modal.Body> 
                         <center>
-                            <img class="avatar border-gray" style={{height:50}} src="https://randomuser.me/api/portraits/women/87.jpg" alt="..."/>
+                            <img class="avatar border-gray" style={{height:80,borderRadius:40}} src="http://pluspng.com/img-png/user-png-icon-male-user-icon-512.png" alt="..."/>
                         </center>
                         <center>
-                            <h4 style={{marginTop:-4}}>Nombre cliente</h4>
+                            <h4 style={{marginTop:-2,color:'gray'}}></h4>
                         </center>
                         <div className="card">
                             {
