@@ -12,8 +12,10 @@ class NavBar extends Component{
 
     }
 
+
     onLogout(){
         this.setState({redirectLogin:true});
+        sessionStorage.clear();
     }
 
 

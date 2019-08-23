@@ -16,6 +16,10 @@ class ListClientes extends Component{
             loadingGuardarCliente : false,
             showFormNuevoCliente : true,
             apiToken :apitoken,
+            nameCliente : '',
+            addressCliente : '',
+            phoneNumberCliente : '',
+            descriptionCliente : '',
             listadoClientes : []
         }
     }
@@ -39,21 +43,28 @@ class ListClientes extends Component{
         })
     }
 
-
+    handleChange(e){
+        this.setState({[e.target.name]:e.target.value});
+    }
 
     getClientes(){
-        fetch('http://localhost:8069/clientes',{
+        this.setState({
+            loading:true,
+            showListadoClientes:false
+        })
+        fetch('https://fec9b687.ngrok.io/clientes',{
             method:'GET',
             headers:{
-                "Content-Type":"application/json"
-                //"Access-Control-Allow-Headers": "Content-type,Authorization",
-                //"api_token":"kEHF9fHTim345lyURxTwXbQYK8eGT0c74I5mhTP6Xq0Jo0vqhwwtATw6OaBr"
+                "Content-Type":"application/json; charset=utf-8",
+                "api_token":this.state.apiToken
             }
         })
         .then(response=>response.json())
         .then(data=>{
             this.setState({
-                listadoClientes: data
+                listadoClientes: data,
+                loading:false,
+                showListadoClientes:true
             })
         })
         .catch((error)=>{
@@ -61,11 +72,34 @@ class ListClientes extends Component{
         })
     }
 
-    guardarNuevoCliente(){
-        this.setState({
+    guardarNuevoCliente(){  
+        fetch('https://fec9b687.ngrok.io/clientes',{
+            method:"POST",
+            headers:{
+                "Accept":"application/json",
+                "Content-Type":"application/json",
+                "api_token":this.state.apiToken
+            },
+            body:JSON.stringify({
+                name          : this.state.nameCliente,
+                adress        : this.state.addressCliente,
+                phone_number  : this.state.addressCliente,
+                description   :this.state.descriptionCliente
+            })
+        })
+        .then((response)=>response.json())
+        .then((responseJson)=>{
+            console.log(responseJson)
+            this.getClientes()
+        })
+        .catch((error)=>{
+            console.log(error);
+        })
+
+        /*this.setState({
             showLoadingClienteNuevo:true,
             showFormNuevoCliente:false
-        })
+        })*/
     }
 
     modalNuevoCliente(){
@@ -86,6 +120,15 @@ class ListClientes extends Component{
             loop: true,
             autoplay: true,
             animationData: require('../lottie/1918-loading-and-done.json'),
+            rendererSettings: {
+              preserveAspectRatio: 'xMidYMid slice',
+            },
+        }
+
+        const loading = {
+            loop: true,
+            autoplay: true,
+            animationData: require('../lottie/loading_rainbow.json'),
             rendererSettings: {
               preserveAspectRatio: 'xMidYMid slice',
             },
@@ -116,34 +159,38 @@ class ListClientes extends Component{
                         </div>
                         <div className="col-md-12">
                             <div class="card strpied-tabled-with-hover">
-                                <div class="card-body table-full-width table-responsive" id="printablediv">
-                                    <table  className="table table-hover table-striped" >
-                                        <thead>
-                                            <tr>
-                                                <th>#</th>
-                                                <th>Cliente</th>
-                                                <th>Barrio</th>
-                                                <th>Direccion</th>
-                                                <th>Alta</th>
-                                                <th>Telefono</th>
-                                                <th>Detalle</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {this.state.listadoClientes.map((clientes,item)=>
-                                                <tr key={item+1}>
-                                                    <td>{item+1}</td>
-                                                    <td><strong>{clientes.name}</strong></td>
-                                                    <td>Villa del rosario</td>
-                                                    <td>Ayacucho 4445</td>
-                                                    <td>19/07/2019 18:30hs</td>
-                                                    <td>3704095311</td>
-                                                    <td><center><Button bsStyle="primary" onClick={()=>this.verDetalleCliente()}> VER</Button></center></td>
+                                {
+                                    this.state.loading &&
+                                    <center><center><Lottie options={loading} height={70} width={'10%'} /></center></center>
+                                }
+                                {this.state.showListadoClientes &&
+                                    <div class="card-body table-full-width table-responsive" id="printablediv">
+                                        <table  className="table table-hover table-striped" >
+                                            <thead>
+                                                <tr>
+                                                    <th>#</th>
+                                                    <th>Cliente</th>
+                                                    <th>Barrio</th>
+                                                    <th>Direccion</th>
+                                                    <th>Telefono</th>
+                                                    <th>Detalle</th>
                                                 </tr>
-                                            )}
-                                        </tbody>        
-                                    </table>
-                                </div>
+                                            </thead>
+                                            <tbody>
+                                                {this.state.listadoClientes.map((clientes,item)=>
+                                                    <tr key={item+1}>
+                                                        <td>{item+1}</td>
+                                                        <td><strong>{clientes.name}</strong></td>
+                                                        <td>Villa del rosario</td>
+                                                        <td>Ayacucho 4445</td>
+                                                        <td>3704095311</td>
+                                                        <td><center><Button bsStyle="primary" onClick={()=>this.verDetalleCliente()}> VER</Button></center></td>
+                                                    </tr>
+                                                )}
+                                            </tbody>        
+                                        </table>
+                                    </div>
+                                }
                             </div>
                         </div>
                     </div>
@@ -242,14 +289,14 @@ class ListClientes extends Component{
                                         <div className="row">
                                             <div className="col-md-6 pr-1">
                                                 <div class="form-group">
-                                                    <label>Apellido</label>
-                                                    <input type="text" class="form-control" placeholder="Company" value=""/>
+                                                    <label>Nombre completo</label>
+                                                    <input type="text" name="nameCliente"  class="form-control" placeholder=".." onChange={this.handleChange.bind(this)} value={this.state.nameCliente}/>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 pl-1">
                                                 <div class="form-group">
-                                                    <label>Nombre</label>
-                                                    <input type="text" class="form-control" placeholder="Last Name" value=""/>
+                                                    <label>Telefono</label>
+                                                    <input type="text" name="phoneNumberCliente" class="form-control" placeholder="Telefono.." onChange={this.handleChange.bind(this)} value={this.state.phoneNumberCliente}/>
                                                 </div>
                                             </div>
                                         </div>
@@ -266,7 +313,7 @@ class ListClientes extends Component{
                                             <div class="col-md-6 pl-1">
                                                 <div class="form-group">
                                                     <label>Direccion</label>
-                                                    <input type="text" class="form-control" placeholder="Last Name" value=""/>
+                                                    <input type="text" name="addressCliente" class="form-control" placeholder="Direccion.." onChange={this.handleChange.bind(this)} value={this.state.addressCliente}/>
                                                 </div>
                                             </div>
                                         </div>
@@ -274,7 +321,8 @@ class ListClientes extends Component{
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label>Observaciones</label>
-                                                    <textarea class="form-control"  style={{height:100}} placeholder="..">
+                                                    <textarea class="form-control" name="descriptionCliente" onChange={this.handleChange.bind(this)}  style={{height:100}} placeholder="..">
+                                                        {this.state.descriptionCliente}
                                                     </textarea>    
                                                 </div>
                                             </div>

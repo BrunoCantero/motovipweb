@@ -43,7 +43,7 @@ class Login extends Component{
                 mensajeUsuario:'Debes ingresar el password'
             })
         }else{
-            fetch("http://localhost:8069/users/login",{
+            fetch("https://fec9b687.ngrok.io/users/login",{
                 method:"POST",
                 headers:{
                     "Accept" : "application/json",
