@@ -54,7 +54,7 @@ class ListClientes extends Component{
             loading:true,
             showListadoClientes:false
         })
-        fetch('http://localhost:8000/clientes',{
+        fetch('https://b1bb3698.ngrok.io/clientes',{
             method:'GET',
             headers:{
                 "Content-Type":"application/json; charset=utf-8",
@@ -75,12 +75,16 @@ class ListClientes extends Component{
         })
     }
 
+    eliminarCliente(){
+        alert("Hola")
+    }
+
     guardarNuevoCliente(){  
         this.setState({
             showLoadingClienteNuevo:true,
             showFormNuevoCliente:false
         })
-        fetch('http://localhost:8000/clientes',{
+        fetch('https://b1bb3698.ngrok.io/clientes',{
             method:"POST",
             headers:{
                 "Accept":"application/json",
@@ -304,7 +308,7 @@ class ListClientes extends Component{
                     </Modal.Body>
                     <Modal.Footer>
                         <Button onClick={()=>this.hiddenModalCliente()} variant="secondary" style={{marginTop:10}}>Salir</Button>
-                        <Button onClick={()=>this.imprimirPedido()} variant="btn btn-danger" style={{marginTop:10}}>Eliminar cliente</Button>
+                        <Button onClick={()=>this.eliminarCliente()} variant="btn btn-danger" style={{marginTop:10}}>Eliminar clisente</Button>
                         <Button onClick={()=>this.imprimirPedido()} variant="btn btn-success" style={{marginTop:10}}>Guardar</Button>
                     </Modal.Footer>
                 </Modal>   
