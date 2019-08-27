@@ -124,7 +124,7 @@ class Login extends Component{
                             }
                             {
                                 this.state.loading &&
-                                    <center><Lottie options={defaultLoading} height={70} width={'20%'} /></center>
+                                    <center><Lottie options={defaultLoading} height={100} style={{marginTop: 5, marginBottom:5}} width={'20%'} /></center>
                             }  
                              
                             <button className="btn btn-lg btn-info btn-block" onClick={()=>this.onLogin()} type="button" style={{marginTop:30 , borderRadius: 100}}>Ingresar</button>   
