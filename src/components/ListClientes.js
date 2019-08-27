@@ -9,13 +9,16 @@ class ListClientes extends Component{
         this.hiddenModalCliente      = this.hiddenModalCliente.bind(this);
         this.verDetalleCliente       = this.verDetalleCliente.bind(this);
         this.hiddenModalNuevoCliente = this.hiddenModalNuevoCliente.bind(this);
+        this.hiddenElminarCliente    = this.hiddenElminarCliente.bind(this);
         const apitoken               = sessionStorage['apitoken'];
         this.state={
             showModalCliente:false,
             showModalNuevoCliente:false,
             loadingGuardarCliente : false,
+            showElminarUsuario:false,
             showFormNuevoCliente : true,
             apiToken :apitoken,
+            idCliente  : '',
             nameCliente : '',
             addressCliente : '',
             phoneNumberCliente : '',
@@ -27,9 +30,11 @@ class ListClientes extends Component{
     }
 
 
-    verDetalleCliente(){
+    verDetalleCliente(idcliente,name){
         this.setState({
-            showModalCliente:true
+            showModalCliente:true,
+            idCliente:idcliente,
+            nameCliente:name
         })
     }
 
@@ -45,8 +50,10 @@ class ListClientes extends Component{
         })
     }
 
-    handleChange(e){
-        this.setState({[e.target.name]:e.target.value});
+    hiddenElminarCliente(){
+        this.setState({
+            showElminarUsuario:false
+        })
     }
 
     getClientes(){
@@ -54,7 +61,7 @@ class ListClientes extends Component{
             loading:true,
             showListadoClientes:false
         })
-        fetch('https://b1bb3698.ngrok.io/clientes',{
+        fetch('http://localhost:8000/clientes',{
             method:'GET',
             headers:{
                 "Content-Type":"application/json; charset=utf-8",
@@ -76,7 +83,9 @@ class ListClientes extends Component{
     }
 
     eliminarCliente(){
-        alert("Hola")
+        this.setState({
+            showElminarUsuario:true
+        })
     }
 
     guardarNuevoCliente(){  
@@ -84,7 +93,7 @@ class ListClientes extends Component{
             showLoadingClienteNuevo:true,
             showFormNuevoCliente:false
         })
-        fetch('https://b1bb3698.ngrok.io/clientes',{
+        fetch('http://localhost:8000/clientes',{
             method:"POST",
             headers:{
                 "Accept":"application/json",
@@ -145,7 +154,9 @@ class ListClientes extends Component{
         })
     }
 
-    
+    handleChange(e){
+        this.setState({[e.target.name]:e.target.value});
+    }
 
     componentDidMount(){
         this.getClientes();
@@ -234,7 +245,7 @@ class ListClientes extends Component{
                                                         <td>{clientes.created_at}</td>
                                                         <td>{clientes.adress}</td>
                                                         <td>{clientes.phone_number}</td>
-                                                        <td><center><Button bsStyle="primary" onClick={()=>this.verDetalleCliente()}> VER</Button></center></td>
+                                                        <td><center><Button bsStyle="primary" onClick={()=>this.verDetalleCliente(clientes.id,clientes.name)}> VER</Button></center></td>
                                                     </tr>
                                                 )}
                                             </tbody>        
@@ -254,10 +265,10 @@ class ListClientes extends Component{
                     </Modal.Header>
                     <Modal.Body> 
                         <center>
-                            <img class="avatar border-gray" style={{height:50}} src="https://randomuser.me/api/portraits/women/87.jpg" alt="..."/>
+                            <img class="avatar border-gray" style={{height:80,borderRadius:40}} src="http://pluspng.com/img-png/user-png-icon-male-user-icon-512.png" alt="..."/>
                         </center>
                         <center>
-                            <h4 style={{marginTop:-4}}>Nombre cliente</h4>
+                            <h4 style={{marginTop:-4}}>{this.state.nameCliente}</h4>
                         </center>
                         <div className="card"> 
                             <div className="card-body">
@@ -308,7 +319,7 @@ class ListClientes extends Component{
                     </Modal.Body>
                     <Modal.Footer>
                         <Button onClick={()=>this.hiddenModalCliente()} variant="secondary" style={{marginTop:10}}>Salir</Button>
-                        <Button onClick={()=>this.eliminarCliente()} variant="btn btn-danger" style={{marginTop:10}}>Eliminar clisente</Button>
+                        <Button onClick={()=>this.eliminarCliente()} variant="btn btn-danger" style={{marginTop:10}}>Eliminar cliente</Button>
                         <Button onClick={()=>this.imprimirPedido()} variant="btn btn-success" style={{marginTop:10}}>Guardar</Button>
                     </Modal.Footer>
                 </Modal>   
@@ -386,7 +397,21 @@ class ListClientes extends Component{
                         <Button onClick={()=>this.hiddenModalNuevoCliente()} variant="secondary"       style={{marginTop:10}}>Salir</Button>
                         <Button onClick={()=>this.guardarNuevoCliente()}     variant="btn btn-success" style={{marginTop:10}}>Guardar cliente</Button>
                     </Modal.Footer>
-                </Modal>       
+                </Modal>  
+                <Modal show={this.state.showElminarUsuario} onHide={this.hiddenElminarCliente}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>¿Estas seguro que deseas eliminar al cliente?</Modal.Title>
+                    </Modal.Header>
+                        <Modal.Body>Se borrara todos los datos de <strong>{this.state.nameCliente}</strong></Modal.Body>
+                    <Modal.Footer>
+                        <Button variant="secondary" onClick={()=>this.hiddenElminarCliente()}>
+                            Salir
+                        </Button>
+                        <Button variant="danger" onClick={()=>this.hiddenElminarCliente()}>
+                            Eliminar
+                        </Button>
+                    </Modal.Footer>
+                </Modal>     
             </div>
         )
     }
