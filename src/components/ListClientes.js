@@ -68,7 +68,7 @@ class ListClientes extends Component{
             loading:true,
             showListadoClientes:false
         })
-        fetch('https://bc8d086c.ngrok.io/clientes',{
+        fetch('http://localhost:8000/clientes',{
             method:'GET',
             headers:{
                 "Content-Type":"application/json; charset=utf-8",
@@ -103,7 +103,7 @@ class ListClientes extends Component{
                 showLoadingDelete:true,
                 descriptionDeleteCliente:false
             })
-            fetch('https://bc8d086c.ngrok.io/clientes',{
+            fetch('http://localhost:8000/clientes',{
                 method:'DELETE',
                 headers:{
                     'Accept':'application/json',
@@ -138,7 +138,7 @@ class ListClientes extends Component{
                 showLoadingClienteNuevo:true,
                 showFormNuevoCliente:false
             });
-            fetch('https://bc8d086c.ngrok.io/clientes',{
+            fetch('http://localhost:8000/clientes',{
                 method:"POST",
                 headers:{
                     "Accept":"application/json",
@@ -179,7 +179,7 @@ class ListClientes extends Component{
                 showLoadingClienteUpdate:true,
                 showFormUpdateCliente:false
             });
-            fetch('https://bc8d086c.ngrok.io/clientes/'+this.state.idCliente,{
+            fetch('http://localhost:8000/clientes/'+this.state.idCliente,{
                 method:"PUT",
                 headers:{
                     "Accept":"application/json",
@@ -360,7 +360,7 @@ class ListClientes extends Component{
                 <Modal  show={this.state.showModalCliente} style={{marginTop:-210}} size="lg" onHide={this.hiddenModalCliente} >
                     <Modal.Header closeButton>
                         <Modal.Title id="contained-modal-title-vcenter">
-                            <strong>Cliente Motovip</strong>
+                            <strong>Cliente </strong>
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body> 

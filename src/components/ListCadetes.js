@@ -6,25 +6,27 @@ class ListCadetes extends Component{
 
     constructor(props){
         super(props);
-        this.hiddenModalCliente      = this.hiddenModalCliente.bind(this);
-        this.verDetalleCliente       = this.verDetalleCliente.bind(this);
-        this.hiddenModalNuevoCliente = this.hiddenModalNuevoCliente.bind(this);
-        this.hiddenElminarCliente    = this.hiddenElminarCliente.bind(this);
+        this.hiddenModalCadete      = this.hiddenModalCadete.bind(this);
+        this.verDetalleCadete       = this.verDetalleCadete.bind(this);
+        this.hiddenModalNuevoCadete = this.hiddenModalNuevoCadete.bind(this);
+        this.hiddenElminarCadete    = this.hiddenElminarCadete.bind(this);
         const apitoken               = sessionStorage['apitoken'];
         this.state={
-            showModalCliente:false,
-            showModalNuevoCliente:false,
-            loadingGuardarCliente : false,
+            showModalCadete:false,
+            showModalNuevoCadete:false,
+            loadingGuardarCadete : false,
             showElminarUsuario:false,
-            showFormNuevoCliente : true,
+            showFormNuevoCadete : true,
             showLoadingDelete:false,
-            descriptionDeleteCliente :true,
+            descriptionDeleteCadete :true,
             apiToken :apitoken,
-            idCliente  : '',
-            nameCliente : '',
-            addressCliente : '',
-            phoneNumberCliente : '',
-            descriptionCliente : '',
+            idCadete  : '',
+            nameCadete : '',
+            addressCadete : '',
+            phoneNumberCadete : '',
+            descriptionCadete : '',
+            patenteCadete : '',
+            dniCadete : '',
             listadoCadetes : [],
             listadoCadetesBuscados:[],
             buscarCadete:''
@@ -32,32 +34,34 @@ class ListCadetes extends Component{
     }
 
 
-    verDetalleCliente(idcliente,name,adress,phone,description){
+    verDetalleCadete(idcadete,name,adress,phone,description,patente,dni){
         this.setState({
-            showModalCliente:true,
-            showFormUpdateCliente:true,
-            showLoadingClienteUpdate:false,
-            idCliente:idcliente,
-            nameCliente:name,
-            addressCliente:adress,
-            phoneNumberCliente:phone,
-            descriptionCliente:description
+            showModalCadete:true,
+            showFormUpdateCadete:true,
+            showLoadingCadeteUpdate:false,
+            idCadete:idcadete,
+            nameCadete:name,
+            addressCadete:adress,
+            phoneNumberCadete:phone,
+            descriptionCadete:description,
+            patenteCadete:patente,
+            dniCadete:dni
         })
     }
 
-    hiddenModalCliente(){
+    hiddenModalCadete(){
         this.setState({
-            showModalCliente:false
+            showModalCadete:false
         })
     }
 
-    hiddenModalNuevoCliente(){
+    hiddenModalNuevoCadete(){
         this.setState({
-            showModalNuevoCliente:false
+            showModalNuevoCadete:false
         })
     }
 
-    hiddenElminarCliente(){
+    hiddenElminarCadete(){
         this.setState({
             showElminarUsuario:false
         })
@@ -68,7 +72,7 @@ class ListCadetes extends Component{
             loading:true,
             showListadoCadetes:false
         })
-        fetch('https://bc8d086c.ngrok.io/cadetes',{
+        fetch('http://localhost:8000/cadetes',{
             method:'GET',
             headers:{
                 "Content-Type":"application/json; charset=utf-8",
@@ -89,21 +93,21 @@ class ListCadetes extends Component{
         })
     }
 
-    eliminarCliente(){
+    eliminarCadete(){
         this.setState({
             showElminarUsuario:true,
             showLoadingDelete:false,
-            descriptionDeleteCliente :true
+            descriptionDeleteCadete :true
         })
     }
 
-    confirmarEliminarCliente(){
-        if(this.state.idCliente !=''){
+    confirmarEliminarCadete(){
+        if(this.state.idCadete !=''){
             this.setState({
                 showLoadingDelete:true,
-                descriptionDeleteCliente:false
+                descriptionDeleteCadete:false
             })
-            fetch('https://bc8d086c.ngrok.io/clientes',{
+            fetch('http://localhost:8000/cadetes',{
                 method:'DELETE',
                 headers:{
                     'Accept':'application/json',
@@ -111,7 +115,7 @@ class ListCadetes extends Component{
                     'api_token':this.state.apiToken
                 },
                 body:JSON.stringify({
-                    id : this.state.idCliente
+                    id : this.state.idCadete
                 })
             })
             .then((response)=>response.json())
@@ -119,9 +123,9 @@ class ListCadetes extends Component{
                 //console.log(responseJson);
                 this.sleep(4000).then(() => {
                     // Do something after the sleep!
-                    this.getClientes();
-                    this.hiddenElminarCliente();
-                    this.hiddenModalCliente();
+                    this.getCadetes();
+                    this.hiddenElminarCadete();
+                    this.hiddenModalCadete();
                 })
             })
             .catch((error)=>{
@@ -130,15 +134,16 @@ class ListCadetes extends Component{
         }
     }
 
-    guardarNuevoCliente(){  
-        if(this.state.nameCliente === ''){
-            alert("DEBES COMPLETAR EL NOMBRE DEL CLIENTE");
+    guardarNuevoCadete(){  
+        //alert(this.state.nameCadete+" "+this.state.dniCadete+" "+this.state.addressCadete+" "+this.state.phoneNumberCadete+" "+this.state.descriptionCadete);
+        if(this.state.nameCadete === ''){
+            alert("DEBES COMPLETAR EL NOMBRE DEL CADETE");
         }else{
             this.setState({
-                showLoadingClienteNuevo:true,
-                showFormNuevoCliente:false
+                showLoadingCadeteNuevo:true,
+                showFormNuevoCadete:false
             });
-            fetch('https://bc8d086c.ngrok.io/clientes',{
+            fetch('http://localhost:8000/cadetes',{
                 method:"POST",
                 headers:{
                     "Accept":"application/json",
@@ -146,10 +151,13 @@ class ListCadetes extends Component{
                     "api_token":this.state.apiToken
                 },
                 body:JSON.stringify({
-                    name          : this.state.nameCliente,
-                    adress        : this.state.addressCliente,
-                    phone_number  : this.state.phoneNumberCliente,
-                    description   :this.state.descriptionCliente
+                    name: this.state.nameCadete,
+                    profile: "user.jpg",
+                    dni: this.state.dniCadete,
+                    vehicle_patent: this.state.patenteCadete,
+                    adress: this.state.addressCadete,
+                    phone_number: this.state.phoneNumberCadete,
+                    description: this.state.descriptionCadete
                 })
             })
             .then((response)=>response.json())
@@ -157,11 +165,11 @@ class ListCadetes extends Component{
                 this.sleep(3000).then(() => {
                     // Do something after the sleep!
                     this.setState({
-                        showLoadingClienteNuevo:false,
-                        showFormNuevoCliente:false
+                        showLoadingCadeteNuevo:false,
+                        showFormNuevoCadete:false
                     })
-                    this.getClientes();
-                    this.hiddenModalNuevoCliente();
+                    this.getCadetes();
+                    this.hiddenModalNuevoCadete();
                 })
             })
             .catch((error)=>{
@@ -171,15 +179,15 @@ class ListCadetes extends Component{
     }
 
 
-    updateCliente(){  
-        if(this.state.nameCliente === ''){
-            alert("DEBES COMPLETAR EL NOMBRE DEL CLIENTE");
+    updateCadete(){  
+        if(this.state.nameCadete === ''){
+            alert("DEBES COMPLETAR EL NOMBRE DEL CADETE");
         }else{
             this.setState({
-                showLoadingClienteUpdate:true,
-                showFormUpdateCliente:false
+                showLoadingCadeteUpdate:true,
+                showFormUpdateCadete:false
             });
-            fetch('https://bc8d086c.ngrok.io/clientes/'+this.state.idCliente,{
+            fetch('http://localhost:8000/cadetes/'+this.state.idCadete,{
                 method:"PUT",
                 headers:{
                     "Accept":"application/json",
@@ -187,10 +195,13 @@ class ListCadetes extends Component{
                     "api_token":this.state.apiToken
                 },
                 body:JSON.stringify({
-                    name          : this.state.nameCliente,
-                    adress        : this.state.addressCliente,
-                    phone_number  : this.state.phoneNumberCliente,
-                    description   :this.state.descriptionCliente
+                    name: this.state.nameCadete,
+                    profile: "user.jpg",
+                    dni: this.state.dniCadete,
+                    vehicle_patent: this.state.patenteCadete,
+                    adress: this.state.addressCadete,
+                    phone_number: this.state.phoneNumberCadete,
+                    description: this.state.descriptionCadete
                 })
             })
             .then((response)=>response.json())
@@ -199,11 +210,11 @@ class ListCadetes extends Component{
                 this.sleep(3000).then(() => {
                     // Do something after the sleep!
                     this.setState({
-                        showLoadingClienteUpdate:false,
-                        showFormUpdateCliente:false
+                        showLoadingCadeteUpdate:false,
+                        showFormUpdateCadete:false
                     })
-                    this.getClientes();
-                    this.hiddenModalCliente();
+                    this.getCadetes();
+                    this.hiddenModalCadete();
                 })
             })
             .catch((error)=>{
@@ -220,17 +231,19 @@ class ListCadetes extends Component{
 
     modalNuevoCliente(){
         this.setState({
-            showModalNuevoCliente:true,
-            showLoadingClienteNuevo:false,
-            showFormNuevoCliente:true,
-            nameCliente:'',
-            addressCliente:'',
-            phoneNumberCliente:'',
-            descriptionCliente:''
+            showModalNuevoCadete:true,
+            showLoadingCadeteNuevo:false,
+            showFormNuevoCadete:true,
+            nameCadete:'',
+            addressCadete:'',
+            phoneNumberCadete:'',
+            descriptionCadete:'',
+            dniCadete:'',
+            patenteCadete:''
         })
     }
 
-    getClientesSearch(){
+    getCadetesSearch(){
         const newData = this.state.listadoCadetesBuscados.filter((item)=>{
             const itemData = item.name.toUpperCase();
             const textData = this.state.buscarCadete.toUpperCase();
@@ -292,7 +305,7 @@ class ListCadetes extends Component{
                                         <label>Buscar cadetes</label>
                                         <input type="text" class="form-control" name="buscarCadete" placeholder="Apellido.."
                                         onKeyPress={event=>{
-                                            this.getClientesSearch()
+                                            this.getCadetesSearch()
                                             if(this.state.buscarCadete.length === 0 || this.state.buscarCadete.length<2){
                                                 this.setState({
                                                     listadoClientes:this.state.listadoClientesBuscados
@@ -302,7 +315,6 @@ class ListCadetes extends Component{
                                         }}
                                         value={this.state.buscarCadete}
                                         onChange={this.handleChange.bind(this)}
-                                        
                                         />
                                     </div>
                                 </div>    
@@ -312,8 +324,8 @@ class ListCadetes extends Component{
                             <div class="card">
                                 <div class="col-md-12 pr-1">
                                     <div class="form-group">
-                                        <label>Alta cadete</label><br/>
-                                        <Button variant="btn btn-success"  onClick={()=>this.modalNuevoCliente()}> Nuevo cadete</Button>
+                                        <label>Alta dsa</label><br/>
+                                        <Button variant="btn btn-success"  onClick={()=>this.modalNuevoCliente()}> Nuevo sada</Button>
                                     </div>
                                 </div>   
                             </div>
@@ -331,7 +343,7 @@ class ListCadetes extends Component{
                                                 <tr>
                                                     <th>#</th>
                                                     <th>Cadete</th>
-                                                    <th>Alta</th>
+                                                    <th>Patente</th>
                                                     <th>Direccion</th>
                                                     <th>Telefono</th>
                                                     <th>Detalle</th>
@@ -342,10 +354,10 @@ class ListCadetes extends Component{
                                                     <tr key={item+1}>
                                                         <td>{item+1}</td>
                                                         <td><strong>{cadetes.name.toUpperCase()}</strong></td>
-                                                        <td>{cadetes.created_at}</td>
+                                                        <td>{cadetes.vehicle_patent}</td>
                                                         <td>{cadetes.adress}</td>
                                                         <td>{cadetes.phone_number}</td>
-                                                        <td><center><Button bsStyle="primary" onClick={()=>this.verDetalleCliente(cadetes.id,cadetes.name,cadetes.adress,cadetes.phone_number,cadetes.description)}> VER</Button></center></td>
+                                                        <td><center><Button bsStyle="primary" onClick={()=>this.verDetalleCadete(cadetes.id,cadetes.name,cadetes.adress,cadetes.phone_number,cadetes.description,cadetes.vehicle_patent,cadetes.dni)}> VER</Button></center></td>
                                                     </tr>
                                                 )}
                                             </tbody>        
@@ -357,10 +369,10 @@ class ListCadetes extends Component{
                     </div>
                 </div>
 
-                <Modal  show={this.state.showModalCliente} style={{marginTop:-210}} size="lg" onHide={this.hiddenModalCliente} >
+                <Modal  show={this.state.showModalCadete} style={{marginTop:-210}} size="lg" onHide={this.hiddenModalCadete} >
                     <Modal.Header closeButton>
                         <Modal.Title id="contained-modal-title-vcenter">
-                            <strong>Motomandado Motovip</strong>
+                            <strong>Mosdo s</strong>
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body> 
@@ -368,46 +380,47 @@ class ListCadetes extends Component{
                             <img class="avatar border-gray" style={{height:80,borderRadius:40}} src="http://pluspng.com/img-png/user-png-icon-male-user-icon-512.png" alt="..."/>
                         </center>
                         <center>
-                            <h4 style={{marginTop:-4}}>{this.state.nameCliente}</h4>
+                            <h4 style={{marginTop:-4}}>{this.state.nameCadete}</h4>
                         </center>
                         <div className="card"> 
-                            {this.state.showLoadingClienteUpdate &&    
+                            {this.state.showLoadingCadeteUpdate &&    
                                 <div>
                                     <center><Lottie options={defaultLoading} height={150} width={'15%'} /></center>
                                     <center><h4 style={{color:'black'}}>Actualizando..</h4></center>
                                 </div> 
                             }
-                            {this.state.showFormUpdateCliente &&    
+                            {this.state.showFormUpdateCadete &&    
                                 <div className="card-body">
                                     <form>
                                         <div className="row">
                                             <div className="col-md-6 pr-1">
                                                 <div class="form-group">
                                                     <label>Nombre completo</label>
-                                                    <input type="text" name="nameCliente"  class="form-control" placeholder=".." onChange={this.handleChange.bind(this)} value={this.state.nameCliente}/>
+                                                    <input type="text" name="nameCadete"  class="form-control" placeholder=".." onChange={this.handleChange.bind(this)} value={this.state.nameCadete}/>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 pl-1">
                                                 <div class="form-group">
-                                                    <label>Telefono</label>
-                                                    <input type="number" name="phoneNumberCliente" class="form-control" placeholder="Telefono.." onChange={this.handleChange.bind(this)} value={this.state.phoneNumberCliente}/>
+                                                    <label>DNI</label>
+                                                    <input type="text" name="dniCadete" class="form-control" placeholder="Dni.." onChange={this.handleChange.bind(this)} value={this.state.dniCadete}/>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="row">
                                             <div className="col-md-6 pr-1">
                                                 <div class="form-group">
-                                                    <label>Barrio</label>
-                                                    <select className="form-control">
-                                                        <option value="1">La colonia</option>
-                                                        <option value="2">Villa del rosario</option>
-                                                    </select>
+                                                    <label>Patente</label>
+                                                    <input type="text" name="patenteCadete" class="form-control" placeholder="Patente moto.." onChange={this.handleChange.bind(this)} value={this.state.patenteCadete}/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Direccion</label>
+                                                    <input type="text" name="addressCadete" class="form-control" placeholder="Direccion.." onChange={this.handleChange.bind(this)} value={this.state.addressCadete}/>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 pl-1">
                                                 <div class="form-group">
-                                                    <label>Direccion</label>
-                                                    <input type="text" name="addressCliente" class="form-control" placeholder="Direccion.." onChange={this.handleChange.bind(this)} value={this.state.addressCliente}/>
+                                                    <label>Telefono</label>
+                                                    <input type="text" name="phoneNumberCadete" class="form-control" placeholder="Telefono.." onChange={this.handleChange.bind(this)} value={this.state.phoneNumberCadete}/>
                                                 </div>
                                             </div>
                                         </div>
@@ -415,27 +428,27 @@ class ListCadetes extends Component{
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label>Observaciones</label>
-                                                    <textarea class="form-control" name="descriptionCliente" onChange={this.handleChange.bind(this)}  style={{height:100}} placeholder="..">
-                                                        {this.state.descriptionCliente}
-                                                    </textarea>   
+                                                    <textarea class="form-control" name="descriptionCadete" onChange={this.handleChange.bind(this)}  style={{height:100}} placeholder="..">
+                                                        {this.state.descriptionCadete}
+                                                    </textarea>    
                                                 </div>
                                             </div>
                                         </div>
                                     </form>
-                                </div> 
+                                </div>  
                             }                         
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button onClick={()=>this.hiddenModalCliente()} variant="secondary" style={{marginTop:10}}>Salir</Button>
-                        <Button onClick={()=>this.eliminarCliente()} variant="btn btn-danger" style={{marginTop:10}}>Eliminar cliente</Button>
-                        <Button onClick={()=>this.updateCliente()} variant="btn btn-success" style={{marginTop:10}}>Guardar</Button>
+                        <Button onClick={()=>this.hiddenModalCadete()} variant="secondary" style={{marginTop:10}}>Salir</Button>
+                        <Button onClick={()=>this.eliminarCadete()} variant="btn btn-danger" style={{marginTop:10}}>Eliminar cadete</Button>
+                        <Button onClick={()=>this.updateCadete()} variant="btn btn-success" style={{marginTop:10}}>Guardar</Button>
                     </Modal.Footer>
                 </Modal>   
-                <Modal  show={this.state.showModalNuevoCliente} style={{marginTop:-210}} size="lg" onHide={this.hiddenModalNuevoCliente} >
+                <Modal  show={this.state.showModalNuevoCadete} style={{marginTop:-210}} size="lg" onHide={this.hiddenModalNuevoCadete} >
                     <Modal.Header closeButton>
                         <Modal.Title id="contained-modal-title-vcenter">
-                            <strong>Nuevo cliente</strong>
+                            <strong>Nuevo </strong>
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body> 
@@ -447,43 +460,44 @@ class ListCadetes extends Component{
                         </center>
                         <div className="card">
                             {
-                                this.state.showLoadingClienteNuevo &&    
+                                this.state.showLoadingCadeteNuevo &&    
                                 <div>
                                     <center><Lottie options={defaultLoading} height={150} width={'15%'} /></center>
                                     <center><h4 style={{color:'black'}}>Guardando..</h4></center>
                                 </div> 
                             }
-                            {this.state.showFormNuevoCliente &&
+                            {this.state.showFormNuevoCadete &&
                                 <div className="card-body">
                                     <form>
                                         <div className="row">
                                             <div className="col-md-6 pr-1">
                                                 <div class="form-group">
                                                     <label>Nombre completo</label>
-                                                    <input type="text" name="nameCliente"  class="form-control" placeholder=".." onChange={this.handleChange.bind(this)} value={this.state.nameCliente}/>
+                                                    <input type="text" name="nameCadete"  class="form-control" placeholder=".." onChange={this.handleChange.bind(this)} value={this.state.nameCadete}/>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 pl-1">
                                                 <div class="form-group">
-                                                    <label>Telefono</label>
-                                                    <input type="text" name="phoneNumberCliente" class="form-control" placeholder="Telefono.." onChange={this.handleChange.bind(this)} value={this.state.phoneNumberCliente}/>
+                                                    <label>DNI</label>
+                                                    <input type="text" name="dniCadete" class="form-control" placeholder="Dni.." onChange={this.handleChange.bind(this)} value={this.state.dniCadete}/>
                                                 </div>
                                             </div>
                                         </div>
                                         <div className="row">
                                             <div className="col-md-6 pr-1">
                                                 <div class="form-group">
-                                                    <label>Barrio</label>
-                                                    <select className="form-control">
-                                                        <option value="1">La colonia</option>
-                                                        <option value="2">Villa del rosario</option>
-                                                    </select>
+                                                    <label>Patente</label>
+                                                    <input type="text" name="patenteCadete" class="form-control" placeholder="Patente moto.." onChange={this.handleChange.bind(this)} value={this.state.patenteCadete}/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Direccion</label>
+                                                    <input type="text" name="addressCadete" class="form-control" placeholder="Direccion.." onChange={this.handleChange.bind(this)} value={this.state.addressCadete}/>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 pl-1">
                                                 <div class="form-group">
-                                                    <label>Direccion</label>
-                                                    <input type="text" name="addressCliente" class="form-control" placeholder="Direccion.." onChange={this.handleChange.bind(this)} value={this.state.addressCliente}/>
+                                                    <label>Telefono</label>
+                                                    <input type="text" name="phoneNumberCadete" class="form-control" placeholder="Telefono.." onChange={this.handleChange.bind(this)} value={this.state.phoneNumberCadete}/>
                                                 </div>
                                             </div>
                                         </div>
@@ -491,8 +505,8 @@ class ListCadetes extends Component{
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <label>Observaciones</label>
-                                                    <textarea class="form-control" name="descriptionCliente" onChange={this.handleChange.bind(this)}  style={{height:100}} placeholder="..">
-                                                        {this.state.descriptionCliente}
+                                                    <textarea class="form-control" name="descriptionCadete" onChange={this.handleChange.bind(this)}  style={{height:100}} placeholder="..">
+                                                        {this.state.descriptionCadete}
                                                     </textarea>    
                                                 </div>
                                             </div>
@@ -503,18 +517,18 @@ class ListCadetes extends Component{
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
-                        <Button onClick={()=>this.hiddenModalNuevoCliente()} variant="secondary"       style={{marginTop:10}}>Salir</Button>
-                        <Button onClick={()=>this.guardarNuevoCliente()}     variant="btn btn-success" style={{marginTop:10}}>Guardar cliente</Button>
+                        <Button onClick={()=>this.hiddenModalNuevoCadete()} variant="secondary"       style={{marginTop:10}}>Salir</Button>
+                        <Button onClick={()=>this.guardarNuevoCadete()}     variant="btn btn-success" style={{marginTop:10}}>Guardar cadete</Button>
                     </Modal.Footer>
                 </Modal>  
-                <Modal show={this.state.showElminarUsuario} onHide={this.hiddenElminarCliente}>
+                <Modal show={this.state.showElminarUsuario} onHide={this.hiddenElminarCadete}>
                     <Modal.Header closeButton>
-                        <Modal.Title>¿Estas seguro que deseas eliminar al cliente?</Modal.Title>
+                        <Modal.Title>¿Estas seguro que deseas eliminar al cadete?</Modal.Title>
                     </Modal.Header>
                         <Modal.Body>
                             {
-                                this.state.descriptionDeleteCliente && 
-                                <div>Se borrara todos los datos de <strong>{this.state.nameCliente}</strong> </div> 
+                                this.state.descriptionDeleteCadete && 
+                                <div>Se borrara todos los datos de <strong>{this.state.nameCadete}</strong> </div> 
                             }
                             
                             {
@@ -524,13 +538,12 @@ class ListCadetes extends Component{
                                     <center><h4 style={{color:'black'}}>Eliminando..</h4></center>
                                 </div> 
                             }
-                        
                         </Modal.Body>
                     <Modal.Footer>
-                        <Button variant="secondary" onClick={()=>this.hiddenElminarCliente()}>
+                        <Button variant="secondary" onClick={()=>this.hiddenElminarCadete()}>
                             Salir
                         </Button>
-                        <Button variant="danger" onClick={()=>this.confirmarEliminarCliente()}>
+                        <Button variant="danger" onClick={()=>this.confirmarEliminarCadete()}>
                             Eliminar
                         </Button>
                     </Modal.Footer>
