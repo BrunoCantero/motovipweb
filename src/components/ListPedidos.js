@@ -3,6 +3,7 @@ import React ,{Component} from 'react';
 import { Modal,Button}   from 'react-bootstrap';
 import Calendar from 'react-calendar';
 import moment             from 'moment';
+import TimeKeeper         from 'react-timekeeper';
 
 moment.locale('es');
 
@@ -11,11 +12,17 @@ class ListPedidos extends Component{
     constructor(props){
         super(props);
         this.hiddenModalNuevoPedido = this.hiddenModalNuevoPedido.bind(this);
+        this.timeChangeInicio = this.timeChangeInicio.bind(this);
+        const apitoken = sessionStorage['apitoken'];
         this.state={
             showModalNuevoPedido:false,
             showFecha : false,
             date: new Date(),
-            fechaSeleccionada:''
+            fechaSeleccionada:'',
+            timeEntregaInicio:'',
+            apiToken : apitoken,
+            showHoraInicio:false,
+            listadoCadetes:[]
         }
     }
 
@@ -30,12 +37,31 @@ class ListPedidos extends Component{
         this.setState({
             showModalNuevoPedido:true
         })
+        this.getHorarioEntregaPedido();
     }
 
     mostrarCalendario(){
-        alert("aasd")
         this.setState({
             showFecha : !this.state.showFecha
+        })
+    }
+
+    getCadetes(){
+        fetch('https://fe79f499.ngrok.io/cadetes',{
+            method:'GET',
+            headers:{
+                'Content-type':'application/json',
+                'api_token': this.state.apiToken
+            }
+        })
+        .then((response)=>response.json())
+        .then((responseJson)=>{
+            this.setState({
+                listadoCadetes:responseJson
+            });
+        })
+        .catch((error)=>{
+            console.log(error);
         })
     }
 
@@ -44,6 +70,36 @@ class ListPedidos extends Component{
         this.setState({ fechaSeleccionada:fecha_seleccionada,showFecha:false })
     }
 
+    getHorarioEntregaPedido(){
+        this.setState({
+            timeEntregaInicio :moment().format("HH:mm")
+        })
+        
+    }
+
+
+    timeChangeInicio(newTime){
+        this.setState({
+           timeEntregaInicio : newTime.formatted24 
+        }) 
+    }
+
+    showHorario(opcion){
+        if(opcion ===1){
+            this.setState({
+                showHoraInicio :!this.state.showHoraInicio,
+            })
+        }
+    }
+
+    handleChange(e){
+        this.setState({[e.target.name]:e.target.value});
+    }
+
+
+    componentDidMount(){
+        this.getCadetes();
+    }
    
     
     render(){
@@ -53,7 +109,7 @@ class ListPedidos extends Component{
                     <div className="row">
                         <div className="col-md-4">
                             <div class="form-group" style={{marginBottom:10}}>
-                                <input type="text" class="form-control" name="fecha" onClick={()=>this.mostrarCalendario()} value={this.state.fechaSeleccionada} placeholder="Fecha.." style={{width:280}} />
+                                <input type="text" class="form-control" name="fecha" onClick={()=>this.mostrarCalendario()} value={this.state.fechaSeleccionada} placeholder="Fecha.." style={{width:180}} />
                                 {this.state.showFecha &&
                                     <Calendar
                                         onChange={this.onChangeFechaSeleccionada.bind(this)}
@@ -61,21 +117,23 @@ class ListPedidos extends Component{
                                     />
                                 } 
                             </div>   
-                            
                         </div>
-                        <div className="col-md-4">
+                        <div className="col-md-2">
                             <div class="form-group">
-                                <input type="text" class="form-control" name="fecha"   placeholder="Clientes.." style={{width:280}} />
+                                <input type="text" class="form-control" name="fecha"   placeholder="Clientes.." style={{width:160}} />
                             </div>
                         </div>
-                        <div className="col-md-4">
+                        <div className="col-md-2">
                             <div className="form-group">
-                                <select class="form-control" name="fecha" style={{float:'left',width:260}}>
+                                <select class="form-control" name="fecha" style={{width:160,marginLeft:10}}>
                                     <option>Elegir</option>
                                 </select>
-                                <Button variant="btn btn-info" style={{float:'right'}} onClick={()=>this.modalNuevoPedido()}> Nuevo pedido</Button>
+                                
                             </div>
-                        </div>    
+                        </div> 
+                        <div className="col-md-3">
+                        <Button variant="btn btn-info" style={{float:'right'}} onClick={()=>this.modalNuevoPedido()}> Nuevo pedido</Button>
+                        </div>   
                         <div className="col-md-12">
                             <div class="card strpied-tabled-with-hover">
                                 <div class="card-body table-full-width table-responsive" id="printablediv">
@@ -87,10 +145,8 @@ class ListPedidos extends Component{
                                                 <th>Estado</th>
                                                 <th>Cadete</th>
                                                 <th>Inicio</th>
-                                                <th>Llegada</th>
                                                 <th>Fin</th>
                                                 <th>Total_compra</th>
-                                                <th>Comision_empresa</th>
                                                 <th>Comision_cadete</th>
                                                 <th>Detalle</th>
                                             </tr>
@@ -98,15 +154,13 @@ class ListPedidos extends Component{
                                         <tbody>
                                             <tr>
                                                 <td>Cliente Daasaddsds</td>
-                                                <td>Direccion</td>
-                                                <td>Estado</td>
-                                                <td>Cadete</td>
-                                                <td>Inicio</td>
-                                                <td>Llegada</td>
-                                                <td>Fin</td>
-                                                <td>Total_compra</td>
-                                                <td>$445</td>
-                                                <td>$44545445</td>
+                                                <td>Direccion asdsads s4 55454</td>
+                                                <td>Terminado</td>
+                                                <td>Gonzalez Carlos</td>
+                                                <td>18:30:45</td>
+                                                <td>18:45:45</td>
+                                                <td><center>$455</center></td>
+                                                <td><center>$445</center></td>
                                                 <td><center><Button bsStyle="primary"> VER</Button></center></td>
                                             </tr>
                                         </tbody>        
@@ -116,15 +170,87 @@ class ListPedidos extends Component{
                         </div>
                     </div>
                 </div>
-                <Modal  show={this.state.showModalNuevoPedido}  size="lg" onHide={this.hiddenModalNuevoPedido} >
+                <Modal  show={this.state.showModalNuevoPedido} style={{marginTop:-150}}  size="lg" onHide={this.hiddenModalNuevoPedido} >
                     <Modal.Header closeButton>
                         <Modal.Title id="contained-modal-title-vcenter">
                             <strong>Nuevo pedido</strong>
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body> 
-                        sadsdadasd
+                        <div className="card-body">
+                            <form>
+                                <div className="row">
+                                    <div className="col-md-6 pr-1">
+                                        <div class="form-group">
+                                            <label>Cliente</label>
+                                            <input type="text" name="nameCliente"  class="form-control" placeholder="Nombre cliente" onChange={this.handleChange.bind(this)} value={this.state.nameCliente}/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 pl-1">
+                                        <div class="form-group">
+                                            <label>Direccion</label>
+                                            <input type="number" name="phoneNumberCliente" class="form-control" placeholder="Telefono.." onChange={this.handleChange.bind(this)} value={this.state.phoneNumberCliente}/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-md-6 pr-1">
+                                        <div class="form-group">
+                                            <label>Cadete</label>
+                                            <select className="form-control">
+                                                <option value="0">Elegir</option>
+                                                {this.state.listadoCadetes.map((cadetes,item)=>
+                                                    <option key={item+1} value={cadetes.id}>{cadetes.name}</option>  
+                                                )}
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 pl-1">
+                                        <div class="form-group">
+                                            <label>Hora inicio</label>
+                                            <input type="text" name="timeEntregaInicio" class="form-control" placeholder="Hora.." value={this.state.timeEntregaInicio} onChange={this.handleChange.bind(this)} onClick={()=>this.showHorario(1)}/>
+                                            {this.state.showHoraInicio &&
+                                                <TimeKeeper
+                                                    switchToMinuteOnHourSelect={true}
+                                                    time={this.state.timeEntregaInicio}
+                                                    onChange={this.timeChangeInicio}
+                                                />
+                                            }
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="row">
+                                    <div className="col-md-6 pr-1">
+                                        <div class="form-group">
+                                            <label>Total compra</label>
+                                            <input type="number" name="nameCliente"  class="form-control" placeholder="Monto total" onChange={this.handleChange.bind(this)} value={this.state.nameCliente}/>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 pl-1">
+                                        <div class="form-group">
+                                            <label>Descripcion compra</label>
+                                            <input type="text" name="phoneNumberCliente" class="form-control" placeholder="Descripcion compra.." onChange={this.handleChange.bind(this)} value={this.state.phoneNumberCliente}/>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label>Observaciones</label>
+                                            <textarea class="form-control" name="descriptionCliente" onChange={this.handleChange.bind(this)}  style={{height:100}} placeholder="..">
+                                                {this.state.descriptionCliente}
+                                            </textarea>   
+                                        </div>
+                                    </div>
+                                </div>
+                             </form>
+                        </div>
                     </Modal.Body>
+                    <Modal.Footer>
+                        <Button onClick={()=>this.hiddenModalNuevoPedido()} variant="secondary" style={{marginTop:10}}>Salir</Button>
+                        <Button onClick={()=>this.guardarCompra()} variant="btn btn-success" style={{marginTop:10}}>Guardar pedido</Button>
+                    </Modal.Footer>
                 </Modal>  
             </div>
                 
