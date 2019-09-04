@@ -4,6 +4,7 @@ import { Modal,Button}   from 'react-bootstrap';
 import Calendar from 'react-calendar';
 import moment             from 'moment';
 import TimeKeeper         from 'react-timekeeper';
+import { thisExpression } from '@babel/types';
 
 moment.locale('es');
 
@@ -22,7 +23,19 @@ class ListPedidos extends Component{
             timeEntregaInicio:'',
             apiToken : apitoken,
             showHoraInicio:false,
-            listadoCadetes:[]
+            listadoCadetes:[],
+            clienteName:'',
+            startTimePedido:'',
+            arrivalTimePedido:'',
+            endTimePedido:'',
+            addressPedido:'',
+            amountPedido : '',
+            orderFeeMotovip: 0,
+            orderFeeCadete:0,
+            orderDescription:'',
+            usuarioId:0,
+            cadeteId:0,
+            clientePedidoId:0
         }
     }
 
@@ -47,7 +60,7 @@ class ListPedidos extends Component{
     }
 
     getCadetes(){
-        fetch('https://fe79f499.ngrok.io/cadetes',{
+        fetch('http://localhost:8000/cadetes',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -59,6 +72,26 @@ class ListPedidos extends Component{
             this.setState({
                 listadoCadetes:responseJson
             });
+        })
+        .catch((error)=>{
+            console.log(error);
+        })
+    }
+
+    getClienteDefault(){
+        fetch('http://localhost:8000/clientes/1',{
+            method:'GET',
+            headers:{
+                'Content-type':'application/json',
+                'api_token': this.state.apiToken
+            }
+        })
+        .then((response)=>response.json())
+        .then((responseJson)=>{
+            this.setState({
+                clienteName:responseJson.name,
+                clientePedidoId: responseJson.id
+            })
         })
         .catch((error)=>{
             console.log(error);
@@ -99,6 +132,7 @@ class ListPedidos extends Component{
 
     componentDidMount(){
         this.getCadetes();
+        this.getClienteDefault();
     }
    
     
@@ -183,13 +217,13 @@ class ListPedidos extends Component{
                                     <div className="col-md-6 pr-1">
                                         <div class="form-group">
                                             <label>Cliente</label>
-                                            <input type="text" name="nameCliente"  class="form-control" placeholder="Nombre cliente" onChange={this.handleChange.bind(this)} value={this.state.nameCliente}/>
+                                            <input type="text" name="clienteName"  class="form-control" placeholder="Nombre cliente" onChange={this.handleChange.bind(this)} value={this.state.clienteName}/>
                                         </div>
                                     </div>
                                     <div class="col-md-6 pl-1">
                                         <div class="form-group">
                                             <label>Direccion</label>
-                                            <input type="number" name="phoneNumberCliente" class="form-control" placeholder="Telefono.." onChange={this.handleChange.bind(this)} value={this.state.phoneNumberCliente}/>
+                                            <input type="number" name="addressPedido" class="form-control" placeholder="Direccion.." onChange={this.handleChange.bind(this)} value={this.state.addressPedido}/>
                                         </div>
                                     </div>
                                 </div>
