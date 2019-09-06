@@ -14,6 +14,7 @@ class ListPedidos extends Component{
         super(props);
         this.hiddenModalNuevoPedido = this.hiddenModalNuevoPedido.bind(this);
         this.timeChangeInicio = this.timeChangeInicio.bind(this);
+        this.hiddenModalEditarPedido = this.hiddenModalEditarPedido.bind(this);
         const apitoken = sessionStorage['apitoken'];
         const iduser   = sessionStorage['iduser'];
         this.state={
@@ -35,6 +36,7 @@ class ListPedidos extends Component{
             endTimePedido:'',
             addressPedido:'',
             amountPedido : 0,
+            idPedido: 0,
             orderFeeMotovip: 0,
             orderFeeCadete:0,
             comisionCadete:0,
@@ -58,7 +60,12 @@ class ListPedidos extends Component{
         this.setState({
             showModalNuevoPedido:true,
             showFormPedidoNuevo:true,
-            showLoadingPedido:false
+            showLoadingPedido:false,
+            addressPedido:'',
+            amountPedido:0,
+            orderFeeCadete:0,
+            orderTitle:'',
+            orderDescription:''
         })
         this.getHorarioEntregaPedido();
     }
@@ -70,7 +77,7 @@ class ListPedidos extends Component{
     }
 
     getCadetes(){
-        fetch('http://localhost:8000/cadetes',{
+        fetch('https://7f7ac448.ngrok.io/cadetes',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -93,7 +100,7 @@ class ListPedidos extends Component{
             comisionCadete:5,
             comisionEmpresa:3
         })
-        /*fetch('http://localhost:8000/comisiones',{
+        /*fetch('https://7f7ac448.ngrok.io/comisiones',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -111,7 +118,7 @@ class ListPedidos extends Component{
     }
 
     getClienteDefault(){
-        fetch('http://localhost:8000/clientes/1',{
+        fetch('https://7f7ac448.ngrok.io/clientes/1',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -134,7 +141,7 @@ class ListPedidos extends Component{
         this.setState({
             loading:true,
         })
-        fetch('http://localhost:8000/pedidos',{
+        fetch('https://7f7ac448.ngrok.io/pedidos',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -214,7 +221,7 @@ class ListPedidos extends Component{
         }
         else{
             
-            fetch('http://localhost:8000/pedidos',{
+            fetch('https://7f7ac448.ngrok.io/pedidos',{
                 method:'POST',
                 headers:{
                     "Accept":"application/json",
@@ -266,6 +273,19 @@ class ListPedidos extends Component{
         })
     }
 
+    editarPedidoDetalle(idpedido,start_pedido){
+        this.setState({
+            showModalEditarPedido:true,
+            idPedido:idpedido,
+            timeEntregaInicio :start_pedido
+        })
+    }
+
+    hiddenModalEditarPedido(){
+        this.setState({
+            showModalEditarPedido:false
+        })
+    }
     
 
 
@@ -378,7 +398,7 @@ class ListPedidos extends Component{
                                                     </td>
                                                     <td><center><strong style={{color:'green'}}>${pedidos.amount}</strong></center></td>
                                                     <td><center><strong style={{color:'red'}}>${pedidos.order_fee_cadet}</strong></center></td>
-                                                    <td><center><Button bsStyle="primary"> VER</Button></center></td>
+                                                    <td><center><Button bsStyle="primary" onClick={()=>this.editarPedidoDetalle(pedidos.id,pedidos.start_time)}> VER</Button></center></td>
                                                 </tr>
                                             )}
                                         </tbody>        
@@ -500,6 +520,128 @@ class ListPedidos extends Component{
                     <Modal.Footer>
                         <Button onClick={()=>this.hiddenModalNuevoPedido()} variant="secondary" style={{marginTop:10}}>Salir</Button>
                         <Button onClick={()=>this.guardarCompra()} variant="btn btn-success" style={{marginTop:10}}>Guardar pedido</Button>
+                    </Modal.Footer>
+                </Modal>
+                <Modal  show={this.state.showModalEditarPedido} style={{marginTop:-150}}  size="lg" onHide={this.hiddenModalEditarPedido} >
+                    <Modal.Header closeButton>
+                        <Modal.Title id="contained-modal-title-vcenter">
+                            <strong>#PEDIDO {this.state.idPedido} {this.state.timeEntregaInicio}</strong>
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body> 
+                        <div className="card-body">
+                            {
+                                this.state.showLoadingPedido &&    
+                                <div>
+                                    <center><Lottie options={defaultLoading} height={150} width={'15%'} /></center>
+                                    <center><h4 style={{color:'black'}}>Guardando..</h4></center>
+                                </div> 
+                            }
+                            
+                                <form>
+                                    <div className="row">
+                                        <div className="col-md-4 pr-1">
+                                            <div class="form-group">
+                                                <label>Cliente</label>
+                                                <input type="text" name="clienteName"  class="form-control" placeholder="Nombre cliente" onChange={this.handleChange.bind(this)} value={this.state.clienteName}/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 pl-1">
+                                            <div class="form-group">
+                                                <label>Direccion</label>
+                                                <input type="text" name="addressPedido" class="form-control" placeholder="Direccion.." onChange={this.handleChange.bind(this)} value={this.state.addressPedido}/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 pl-1">
+                                            <div class="form-group">
+                                                <label>Hora inicio</label>
+                                                <input type="text" name="addressPedido" class="form-control" placeholder="Direccion.." onChange={this.handleChange.bind(this)} value={this.state.addressPedido}/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                    <div className="row">
+                                        <div className="col-md-4 pr-1">
+                                            <div class="form-group">
+                                                <label>Cadete</label>
+                                                <input type="text" name="nombreCadete" class="form-control"  value={this.state.nombreCadete}/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 pl-1">
+                                            <div class="form-group">
+                                                <label>Hora llegada</label>
+                                                <input type="text" name="timeEntregaInicio" class="form-control" placeholder="Hora.." value={this.state.timeEntregaInicio} onChange={this.handleChange.bind(this)} onClick={()=>this.showHorario(1)}/>
+                                                {this.state.showHoraInicio &&
+                                                    <TimeKeeper
+                                                        switchToMinuteOnHourSelect={true}
+                                                        time={this.state.timeEntregaInicio}
+                                                        onChange={this.timeChangeInicio}
+                                                    />
+                                                } 
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 pl-1">
+                                            <div class="form-group">
+                                                <label>Hora fin</label>
+                                                <input type="text" name="timeEntregaInicio" class="form-control" placeholder="Hora.." value={this.state.timeEntregaInicio} onChange={this.handleChange.bind(this)} onClick={()=>this.showHorario(1)}/>
+                                                {this.state.showHoraInicio &&
+                                                    <TimeKeeper
+                                                        switchToMinuteOnHourSelect={true}
+                                                        time={this.state.timeEntregaInicio}
+                                                        onChange={this.timeChangeInicio}
+                                                    />
+                                                } 
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                    <div className="row">
+                                        <div className="col-md-4 pr-1">
+                                            <div class="form-group">
+                                                <label>Total compra</label>
+                                                <input type="number" name="amountPedido"  
+                                                    class="form-control" placeholder="Monto total" 
+                                                    onChange={this.handleChange.bind(this)}
+                                                    value={this.state.amountPedido}
+                                                    onKeyPress={event=>{
+                                                        if(event.key === 'Enter'){
+                                                            this.calcularComisiones()
+                                                        }
+                                                    }}
+                                                />
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 pl-1">
+                                            <div class="form-group">
+                                                <label>Comision empresa</label>
+                                                <input type="text" name="orderTitle" class="form-control" placeholder="Pago de cuentas, retirar comida.." onChange={this.handleChange.bind(this)} value={this.state.orderTitle}/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 pl-1">
+                                            <div class="form-group">
+                                                <label>Comision cadete</label>
+                                                <input type="text" name="orderTitle" class="form-control" placeholder="Pago de cuentas, retirar comida.." onChange={this.handleChange.bind(this)} value={this.state.orderTitle}/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label>Observaciones</label>
+                                                <textarea class="form-control" name="orderDescription" onChange={this.handleChange.bind(this)}  style={{height:100}} placeholder="..">
+                                                    {this.state.orderDescription}
+                                                </textarea>   
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            
+                        </div>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button onClick={()=>this.hiddenModalEditarPedido()} variant="secondary" style={{marginTop:10}}>Salir</Button>
+                        <Button onClick={()=>this.editarPedido()} variant="btn btn-success" style={{marginTop:10}}>Actualizar pedido</Button>
                     </Modal.Footer>
                 </Modal>  
             </div>
