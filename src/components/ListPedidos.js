@@ -24,6 +24,7 @@ class ListPedidos extends Component{
             showFecha : false,
             date: new Date(),
             fechaSeleccionada:'',
+            fechaOrder:'',
             timeEntregaInicio:'',
             timeLlegadaPedido:'',
             timeFinPedido:'',
@@ -82,7 +83,7 @@ class ListPedidos extends Component{
     }
 
     getCadetes(){
-        fetch('http://localhost:8000/cadetes',{
+        fetch('https://911ded83.ngrok.io/cadetes',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -105,7 +106,7 @@ class ListPedidos extends Component{
             comisionCadete:5,
             comisionEmpresa:3
         })
-        /*fetch('http://localhost:8000/comisiones',{
+        /*fetch('https://911ded83.ngrok.io/comisiones',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -123,7 +124,7 @@ class ListPedidos extends Component{
     }
 
     getClienteDefault(){
-        fetch('http://localhost:8000/clientes/1',{
+        fetch('https://911ded83.ngrok.io/clientes/1',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -146,7 +147,7 @@ class ListPedidos extends Component{
         this.setState({
             loading:true,
         })
-        fetch('http://localhost:8000/pedidos',{
+        fetch('https://911ded83.ngrok.io/pedidos',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -249,7 +250,7 @@ class ListPedidos extends Component{
         }
         else{
             
-            fetch('http://localhost:8000/pedidos',{
+            fetch('https://911ded83.ngrok.io/pedidos',{
                 method:'POST',
                 headers:{
                     "Accept":"application/json",
@@ -301,9 +302,11 @@ class ListPedidos extends Component{
         })
     }
 
-    editarPedidoDetalle(idpedido,idcadete,cliete_name,direccion,start_pedido,arrival_time,end_time,comision_empresa,comision_motomandado,order_title,order_description,total_compra){
+    editarPedidoDetalle(idpedido,idcadete,idcliente,cliete_name,direccion,start_pedido,arrival_time,end_time,comision_empresa,comision_motomandado,order_title,order_description,fecha_order,total_compra){
         this.setState({
             showModalEditarPedido:true,
+            showFormEditarPedido:true,
+            showLoadingEditarPedido:false,
             showHoraLlegada:false,
             showHoraFin:false,
             idPedido:idpedido,
@@ -316,7 +319,9 @@ class ListPedidos extends Component{
             orderFeeMotovip:comision_empresa,
             orderFeeCadete:comision_motomandado,
             orderTitle:order_title,
-            orderDescription:order_description
+            orderDescription:order_description,
+            fechaOrder:fecha_order,
+            clientePedidoId:idcliente
         })
         //Buscar cadete
         this.getCadeteProfile(idcadete);
@@ -342,6 +347,53 @@ class ListPedidos extends Component{
         this.setState({
             showModalEditarPedido:false
         })
+    }
+
+    updatePedido(){
+        this.setState({
+            showFormEditarPedido:false,
+            showLoadingEditarPedido:true
+        })
+        fetch('https://911ded83.ngrok.io/pedidos/'+this.state.idPedido,{
+            method:"PUT",
+            headers:{
+                "Accept":"application/json",
+                "Content-Type":"application/json",
+                "api_token":this.state.apiToken
+            },
+            body:JSON.stringify({
+                'cliente_name':this.state.clienteName,
+                'fecha_order':this.state.fechaOrder,
+                'start_time':this.state.timeEntregaInicio,
+                'arrival_time':this.state.timeLlegadaPedido,
+                'end_time':this.state.timeFinPedido,
+                'adress':this.state.addressPedido,
+                'amount':this.state.amountPedido,
+                'order_fee_mv':this.state.orderFeeMotovip,
+                'order_fee_cadet':this.state.orderFeeCadete,
+                'order_title':this.state.orderTitle,
+                'order_description':this.state.orderDescription,
+                'user_id':this.state.usuarioId,
+                'cadete_id':this.state.cadeteId,
+                'cliente_id':this.state.clientePedidoId
+            })
+        })
+        .then((response)=>response.json())
+        .then((responseJson)=>{
+            this.sleep(3000).then(() => {
+                // Do something after the sleep!
+                this.setState({
+                    showFormEditarPedido:false,
+                    showLoadingEditarPedido:false
+                })
+                this.getPedidos();
+                this.hiddenModalEditarPedido();
+            })
+        })
+        .catch((error)=>{
+            console.log(error);
+        })
+
     }
     
 
@@ -455,7 +507,7 @@ class ListPedidos extends Component{
                                                     </td>
                                                     <td><center><strong style={{color:'green'}}>${pedidos.amount}</strong></center></td>
                                                     <td><center><strong style={{color:'red'}}>${pedidos.order_fee_cadet}</strong></center></td>
-                                                    <td><center><Button bsStyle="primary" onClick={()=>this.editarPedidoDetalle(pedidos.id,pedidos.cadete_id,pedidos.cliente_name,pedidos.adress,pedidos.start_time,pedidos.arrival_time,pedidos.end_time,pedidos.order_fee_mv,pedidos.order_fee_cadet,pedidos.order_title,pedidos.order_description,pedidos.amount)}> VER</Button></center></td>
+                                                    <td><center><Button bsStyle="primary" onClick={()=>this.editarPedidoDetalle(pedidos.id,pedidos.cadete_id,pedidos.cliente_id,pedidos.cliente_name,pedidos.adress,pedidos.start_time,pedidos.arrival_time,pedidos.end_time,pedidos.order_fee_mv,pedidos.order_fee_cadet,pedidos.order_title,pedidos.order_description,pedidos.fecha_order,pedidos.amount)}> VER</Button></center></td>
                                                 </tr>
                                             )}
                                         </tbody>        
@@ -588,13 +640,14 @@ class ListPedidos extends Component{
                     <Modal.Body> 
                         <div className="card-body">
                             {
-                                this.state.showLoadingPedido &&    
+                                this.state.showLoadingEditarPedido &&    
                                 <div>
                                     <center><Lottie options={defaultLoading} height={150} width={'15%'} /></center>
                                     <center><h4 style={{color:'black'}}>Guardando..</h4></center>
                                 </div> 
                             }
-                            
+                            {
+                                this.state.showFormEditarPedido &&
                                 <form>
                                     <div className="row">
                                         <div className="col-md-4 pr-1">
@@ -701,12 +754,12 @@ class ListPedidos extends Component{
                                         </div>
                                     </div>
                                 </form>
-                            
+                            }
                         </div>
                     </Modal.Body>
                     <Modal.Footer>
                         <Button onClick={()=>this.hiddenModalEditarPedido()} variant="secondary" style={{marginTop:10}}>Salir</Button>
-                        <Button onClick={()=>this.editarPedido()} variant="btn btn-success" style={{marginTop:10}}>Actualizar pedido</Button>
+                        <Button onClick={()=>this.updatePedido()} variant="btn btn-success" style={{marginTop:10}}>Actualizar pedido</Button>
                     </Modal.Footer>
                 </Modal>  
             </div>

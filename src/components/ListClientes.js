@@ -68,7 +68,7 @@ class ListClientes extends Component{
             loading:true,
             showListadoClientes:false
         })
-        fetch('http://localhost:8000/clientes',{
+        fetch('https://911ded83.ngrok.io/clientes',{
             method:'GET',
             headers:{
                 "Content-Type":"application/json; charset=utf-8",
@@ -103,7 +103,7 @@ class ListClientes extends Component{
                 showLoadingDelete:true,
                 descriptionDeleteCliente:false
             })
-            fetch('http://localhost:8000/clientes',{
+            fetch('https://911ded83.ngrok.io/clientes',{
                 method:'DELETE',
                 headers:{
                     'Accept':'application/json',
@@ -138,7 +138,7 @@ class ListClientes extends Component{
                 showLoadingClienteNuevo:true,
                 showFormNuevoCliente:false
             });
-            fetch('http://localhost:8000/clientes',{
+            fetch('https://911ded83.ngrok.io/clientes',{
                 method:"POST",
                 headers:{
                     "Accept":"application/json",
@@ -179,7 +179,7 @@ class ListClientes extends Component{
                 showLoadingClienteUpdate:true,
                 showFormUpdateCliente:false
             });
-            fetch('http://localhost:8000/clientes/'+this.state.idCliente,{
+            fetch('https://911ded83.ngrok.io/clientes/'+this.state.idCliente,{
                 method:"PUT",
                 headers:{
                     "Accept":"application/json",
