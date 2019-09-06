@@ -14,6 +14,8 @@ class ListPedidos extends Component{
         super(props);
         this.hiddenModalNuevoPedido = this.hiddenModalNuevoPedido.bind(this);
         this.timeChangeInicio = this.timeChangeInicio.bind(this);
+        this.timeChangeLlegada = this.timeChangeLlegada.bind(this);
+        this.timeChangeFin = this.timeChangeFin.bind(this);
         this.hiddenModalEditarPedido = this.hiddenModalEditarPedido.bind(this);
         const apitoken = sessionStorage['apitoken'];
         const iduser   = sessionStorage['iduser'];
@@ -23,6 +25,9 @@ class ListPedidos extends Component{
             date: new Date(),
             fechaSeleccionada:'',
             timeEntregaInicio:'',
+            timeLlegadaPedido:'',
+            timeFinPedido:'',
+            nombreCadete:'',
             apiToken : apitoken,
             showHoraInicio:false,
             loading:false,
@@ -77,7 +82,7 @@ class ListPedidos extends Component{
     }
 
     getCadetes(){
-        fetch('https://7f7ac448.ngrok.io/cadetes',{
+        fetch('http://localhost:8000/cadetes',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -100,7 +105,7 @@ class ListPedidos extends Component{
             comisionCadete:5,
             comisionEmpresa:3
         })
-        /*fetch('https://7f7ac448.ngrok.io/comisiones',{
+        /*fetch('http://localhost:8000/comisiones',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -118,7 +123,7 @@ class ListPedidos extends Component{
     }
 
     getClienteDefault(){
-        fetch('https://7f7ac448.ngrok.io/clientes/1',{
+        fetch('http://localhost:8000/clientes/1',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -141,7 +146,7 @@ class ListPedidos extends Component{
         this.setState({
             loading:true,
         })
-        fetch('https://7f7ac448.ngrok.io/pedidos',{
+        fetch('http://localhost:8000/pedidos',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -186,10 +191,33 @@ class ListPedidos extends Component{
         }) 
     }
 
+    timeChangeLlegada(newTime){
+        this.setState({
+           timeLlegadaPedido : newTime.formatted24 
+        }) 
+    }
+
+    timeChangeFin(newTime){
+        this.setState({
+           timeFinPedido : newTime.formatted24 
+        }) 
+    }
+
+
     showHorario(opcion){
         if(opcion ===1){
             this.setState({
                 showHoraInicio :!this.state.showHoraInicio,
+            })
+        }
+        else if(opcion ===2){
+            this.setState({
+                showHoraLlegada :!this.state.showHoraLlegada,
+            })
+        }
+        else if(opcion ===3){
+            this.setState({
+                showHoraFin :!this.state.showHoraFin,
             })
         }
     }
@@ -221,7 +249,7 @@ class ListPedidos extends Component{
         }
         else{
             
-            fetch('https://7f7ac448.ngrok.io/pedidos',{
+            fetch('http://localhost:8000/pedidos',{
                 method:'POST',
                 headers:{
                     "Accept":"application/json",
@@ -273,12 +301,41 @@ class ListPedidos extends Component{
         })
     }
 
-    editarPedidoDetalle(idpedido,start_pedido){
+    editarPedidoDetalle(idpedido,idcadete,cliete_name,direccion,start_pedido,arrival_time,end_time,comision_empresa,comision_motomandado,order_title,order_description,total_compra){
         this.setState({
             showModalEditarPedido:true,
+            showHoraLlegada:false,
+            showHoraFin:false,
             idPedido:idpedido,
-            timeEntregaInicio :start_pedido
+            timeEntregaInicio :start_pedido,
+            timeLlegadaPedido:arrival_time,
+            timeFinPedido : end_time,
+            amountPedido:total_compra,
+            clienteName:cliete_name,
+            addressPedido:direccion,
+            orderFeeMotovip:comision_empresa,
+            orderFeeCadete:comision_motomandado,
+            orderTitle:order_title,
+            orderDescription:order_description
         })
+        //Buscar cadete
+        this.getCadeteProfile(idcadete);
+    }
+
+    
+
+    getCadeteProfile(id){
+        let cadete = this.state.listadoCadetes.filter(function(cadetes){
+
+            return cadetes.id == id;
+
+        });
+
+        this.setState({
+            nombreCadete:cadete[0].name,
+            cadeteId:cadete[0].id
+        })
+    
     }
 
     hiddenModalEditarPedido(){
@@ -393,12 +450,12 @@ class ListPedidos extends Component{
                                                         {pedidos.end_time  === '' ?
                                                             <span>-</span>
                                                         :
-                                                            <span>{pedidos.arrival_time}</span>
+                                                            <span>{pedidos.end_time}</span>
                                                         }
                                                     </td>
                                                     <td><center><strong style={{color:'green'}}>${pedidos.amount}</strong></center></td>
                                                     <td><center><strong style={{color:'red'}}>${pedidos.order_fee_cadet}</strong></center></td>
-                                                    <td><center><Button bsStyle="primary" onClick={()=>this.editarPedidoDetalle(pedidos.id,pedidos.start_time)}> VER</Button></center></td>
+                                                    <td><center><Button bsStyle="primary" onClick={()=>this.editarPedidoDetalle(pedidos.id,pedidos.cadete_id,pedidos.cliente_name,pedidos.adress,pedidos.start_time,pedidos.arrival_time,pedidos.end_time,pedidos.order_fee_mv,pedidos.order_fee_cadet,pedidos.order_title,pedidos.order_description,pedidos.amount)}> VER</Button></center></td>
                                                 </tr>
                                             )}
                                         </tbody>        
@@ -542,20 +599,20 @@ class ListPedidos extends Component{
                                     <div className="row">
                                         <div className="col-md-4 pr-1">
                                             <div class="form-group">
-                                                <label>Cliente</label>
+                                                <label style={{fontWeight:'bold',color:'gray'}}>Cliente</label>
                                                 <input type="text" name="clienteName"  class="form-control" placeholder="Nombre cliente" onChange={this.handleChange.bind(this)} value={this.state.clienteName}/>
                                             </div>
                                         </div>
                                         <div class="col-md-4 pl-1">
                                             <div class="form-group">
-                                                <label>Direccion</label>
+                                                <label style={{fontWeight:'bold',color:'gray'}}>Direccion</label>
                                                 <input type="text" name="addressPedido" class="form-control" placeholder="Direccion.." onChange={this.handleChange.bind(this)} value={this.state.addressPedido}/>
                                             </div>
                                         </div>
                                         <div class="col-md-4 pl-1">
                                             <div class="form-group">
-                                                <label>Hora inicio</label>
-                                                <input type="text" name="addressPedido" class="form-control" placeholder="Direccion.." onChange={this.handleChange.bind(this)} value={this.state.addressPedido}/>
+                                                <label style={{fontWeight:'bold',color:'gray'}}>Hora inicio</label>
+                                                <input type="text" name="timeEntregaInicio" class="form-control" placeholder="Inicio.." onChange={this.handleChange.bind(this)} value={this.state.timeEntregaInicio}/>
                                             </div>
                                         </div>
                                     </div>
@@ -563,32 +620,32 @@ class ListPedidos extends Component{
                                     <div className="row">
                                         <div className="col-md-4 pr-1">
                                             <div class="form-group">
-                                                <label>Cadete</label>
+                                                <label style={{fontWeight:'bold',color:'gray'}}>Cadete</label>
                                                 <input type="text" name="nombreCadete" class="form-control"  value={this.state.nombreCadete}/>
                                             </div>
                                         </div>
                                         <div class="col-md-4 pl-1">
                                             <div class="form-group">
-                                                <label>Hora llegada</label>
-                                                <input type="text" name="timeEntregaInicio" class="form-control" placeholder="Hora.." value={this.state.timeEntregaInicio} onChange={this.handleChange.bind(this)} onClick={()=>this.showHorario(1)}/>
-                                                {this.state.showHoraInicio &&
+                                                <label style={{fontWeight:'bold',color:'gray'}}>Hora llegada</label>
+                                                <input type="text" name="timeLlegadaPedido" class="form-control" placeholder="Llegada.." value={this.state.timeLlegadaPedido} onChange={this.handleChange.bind(this)} onClick={()=>this.showHorario(2)}/>
+                                                {this.state.showHoraLlegada &&
                                                     <TimeKeeper
                                                         switchToMinuteOnHourSelect={true}
-                                                        time={this.state.timeEntregaInicio}
-                                                        onChange={this.timeChangeInicio}
+                                                        time={this.state.timeLlegadaPedido}
+                                                        onChange={this.timeChangeLlegada}
                                                     />
                                                 } 
                                             </div>
                                         </div>
                                         <div class="col-md-4 pl-1">
                                             <div class="form-group">
-                                                <label>Hora fin</label>
-                                                <input type="text" name="timeEntregaInicio" class="form-control" placeholder="Hora.." value={this.state.timeEntregaInicio} onChange={this.handleChange.bind(this)} onClick={()=>this.showHorario(1)}/>
-                                                {this.state.showHoraInicio &&
+                                                <label style={{fontWeight:'bold',color:'gray'}}>Hora fin</label>
+                                                <input type="text" name="timeLlegadaPedido" class="form-control" placeholder="Fin.." value={this.state.timeFinPedido} onChange={this.handleChange.bind(this)} onClick={()=>this.showHorario(3)}/>
+                                                {this.state.showHoraFin &&
                                                     <TimeKeeper
                                                         switchToMinuteOnHourSelect={true}
-                                                        time={this.state.timeEntregaInicio}
-                                                        onChange={this.timeChangeInicio}
+                                                        time={this.state.timeFinPedido}
+                                                        onChange={this.timeChangeFin}
                                                     />
                                                 } 
                                             </div>
@@ -598,7 +655,7 @@ class ListPedidos extends Component{
                                     <div className="row">
                                         <div className="col-md-4 pr-1">
                                             <div class="form-group">
-                                                <label>Total compra</label>
+                                                <label style={{fontWeight:'bold',color:'gray'}}>Total compra</label>
                                                 <input type="number" name="amountPedido"  
                                                     class="form-control" placeholder="Monto total" 
                                                     onChange={this.handleChange.bind(this)}
@@ -614,17 +671,25 @@ class ListPedidos extends Component{
                                         <div class="col-md-4 pl-1">
                                             <div class="form-group">
                                                 <label>Comision empresa</label>
-                                                <input type="text" name="orderTitle" class="form-control" placeholder="Pago de cuentas, retirar comida.." onChange={this.handleChange.bind(this)} value={this.state.orderTitle}/>
+                                                <input type="text" name="orderFeeMotovip" class="form-control" placeholder="Comision empresa.." onChange={this.handleChange.bind(this)} value={this.state.orderFeeMotovip}/>
                                             </div>
                                         </div>
                                         <div class="col-md-4 pl-1">
                                             <div class="form-group">
                                                 <label>Comision cadete</label>
-                                                <input type="text" name="orderTitle" class="form-control" placeholder="Pago de cuentas, retirar comida.." onChange={this.handleChange.bind(this)} value={this.state.orderTitle}/>
+                                                <input type="text" name="orderFeeCadete" class="form-control" placeholder="Comision cadete.." onChange={this.handleChange.bind(this)} value={this.state.orderFeeCadete}/>
                                             </div>
                                         </div>
                                     </div>
-                                    
+                                    <hr/>
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label>Compra</label>
+                                                <input type="text" name="orderTitle" class="form-control" placeholder="Comision empresa.." onChange={this.handleChange.bind(this)} value={this.state.orderTitle}/>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-group">

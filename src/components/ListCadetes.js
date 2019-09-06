@@ -72,7 +72,7 @@ class ListCadetes extends Component{
             loading:true,
             showListadoCadetes:false
         })
-        fetch('https://7f7ac448.ngrok.io/cadetes',{
+        fetch('http://localhost:8000/cadetes',{
             method:'GET',
             headers:{
                 "Content-Type":"application/json; charset=utf-8",
@@ -107,7 +107,7 @@ class ListCadetes extends Component{
                 showLoadingDelete:true,
                 descriptionDeleteCadete:false
             })
-            fetch('https://7f7ac448.ngrok.io/cadetes',{
+            fetch('http://localhost:8000/cadetes',{
                 method:'DELETE',
                 headers:{
                     'Accept':'application/json',
@@ -143,7 +143,7 @@ class ListCadetes extends Component{
                 showLoadingCadeteNuevo:true,
                 showFormNuevoCadete:false
             });
-            fetch('https://7f7ac448.ngrok.io/cadetes',{
+            fetch('http://localhost:8000/cadetes',{
                 method:"POST",
                 headers:{
                     "Accept":"application/json",
@@ -151,13 +151,13 @@ class ListCadetes extends Component{
                     "api_token":this.state.apiToken
                 },
                 body:JSON.stringify({
-                    name: this.state.nameCadete,
-                    profile: "user.jpg",
-                    dni: this.state.dniCadete,
-                    vehicle_patent: this.state.patenteCadete,
-                    adress: this.state.addressCadete,
-                    phone_number: this.state.phoneNumberCadete,
-                    description: this.state.descriptionCadete
+                    name           : this.state.nameCadete,
+                    profile        : "user.jpg",
+                    dni            : this.state.dniCadete,
+                    vehicle_patent : this.state.patenteCadete,
+                    adress         : this.state.addressCadete,
+                    phone_number   : this.state.phoneNumberCadete,
+                    description    : this.state.descriptionCadete
                 })
             })
             .then((response)=>response.json())
@@ -187,7 +187,7 @@ class ListCadetes extends Component{
                 showLoadingCadeteUpdate:true,
                 showFormUpdateCadete:false
             });
-            fetch('https://7f7ac448.ngrok.io/cadetes/'+this.state.idCadete,{
+            fetch('http://localhost:8000/cadetes/'+this.state.idCadete,{
                 method:"PUT",
                 headers:{
                     "Accept":"application/json",
@@ -195,13 +195,13 @@ class ListCadetes extends Component{
                     "api_token":this.state.apiToken
                 },
                 body:JSON.stringify({
-                    name: this.state.nameCadete,
-                    profile: "user.jpg",
-                    dni: this.state.dniCadete,
-                    vehicle_patent: this.state.patenteCadete,
-                    adress: this.state.addressCadete,
-                    phone_number: this.state.phoneNumberCadete,
-                    description: this.state.descriptionCadete
+                    name           : this.state.nameCadete,
+                    profile        : "user.jpg",
+                    dni            : this.state.dniCadete,
+                    vehicle_patent : this.state.patenteCadete,
+                    adress         : this.state.addressCadete,
+                    phone_number   : this.state.phoneNumberCadete,
+                    description    : this.state.descriptionCadete
                 })
             })
             .then((response)=>response.json())
@@ -334,7 +334,7 @@ class ListCadetes extends Component{
                             <div class="card strpied-tabled-with-hover">
                                 {
                                     this.state.loading &&
-                                    <center><center><Lottie options={loading} height={70} width={'10%'} /></center></center>
+                                    <center><center><Lottie options={loading} height={120} width={'9%'} /></center></center>
                                 }
                                 {this.state.showListadoCadetes &&
                                     <div class="card-body table-full-width table-responsive" id="printablediv">
