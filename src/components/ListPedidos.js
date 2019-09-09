@@ -5,8 +5,33 @@ import Calendar from 'react-calendar';
 import moment             from 'moment';
 import TimeKeeper         from 'react-timekeeper';
 import Lottie            from 'react-lottie';
+import Autosuggest from 'react-autosuggest';
+
 
 moment.locale('es');
+
+
+
+  // Teach Autosuggest how to calculate suggestions for any given input value.
+const getSuggestions = value => {
+    const inputValue = value.trim().toLowerCase();
+    const inputLength = inputValue.length;
+  
+    return inputLength === 0 ? [] : languages.filter(lang =>
+      lang.name.toLowerCase().slice(0, inputLength) === inputValue
+    );
+};
+  
+
+const getSuggestionValue = suggestion => suggestion.name;
+  
+  // Use your imagination to render suggestions.
+const renderSuggestion = suggestion => (
+    <div className="alert alert-info">
+      {suggestion.name}
+    </div>
+);
+
 
 class ListPedidos extends Component{
 
@@ -35,6 +60,7 @@ class ListPedidos extends Component{
             showLoadingPedido:false,
             showFormPedidoNuevo:true,
             listadoCadetes:[],
+            listadoClientes:[],
             listadoPedidos:[],
             clienteName:'',
             startTimePedido:'',
@@ -51,7 +77,9 @@ class ListPedidos extends Component{
             orderDescription:'',
             usuarioId:iduser,
             cadeteId:0,
-            clientePedidoId:0
+            clientePedidoId:0,
+            value: '',
+            suggestions: []
         }
     }
 
@@ -83,7 +111,7 @@ class ListPedidos extends Component{
     }
 
     getCadetes(){
-        fetch('https://911ded83.ngrok.io/cadetes',{
+        fetch('http://localhost:8000/cadetes',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -106,25 +134,10 @@ class ListPedidos extends Component{
             comisionCadete:5,
             comisionEmpresa:3
         })
-        /*fetch('https://911ded83.ngrok.io/comisiones',{
-            method:'GET',
-            headers:{
-                'Content-type':'application/json',
-                'api_token': this.state.apiToken
-            }
-        })
-        .then((response)=>response.json())
-        .then((responseJson)=>{
-            
-            //console.log(responseJson);
-        })
-        .catch((error)=>{
-            console.log(error)
-        })*/
     }
 
     getClienteDefault(){
-        fetch('https://911ded83.ngrok.io/clientes/1',{
+        fetch('http://localhost:8000/clientes/1',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -147,7 +160,7 @@ class ListPedidos extends Component{
         this.setState({
             loading:true,
         })
-        fetch('https://911ded83.ngrok.io/pedidos',{
+        fetch('http://localhost:8000/pedidos',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -250,7 +263,7 @@ class ListPedidos extends Component{
         }
         else{
             
-            fetch('https://911ded83.ngrok.io/pedidos',{
+            fetch('http://localhost:8000/pedidos',{
                 method:'POST',
                 headers:{
                     "Accept":"application/json",
@@ -354,7 +367,7 @@ class ListPedidos extends Component{
             showFormEditarPedido:false,
             showLoadingEditarPedido:true
         })
-        fetch('https://911ded83.ngrok.io/pedidos/'+this.state.idPedido,{
+        fetch('http://localhost:8000/pedidos/'+this.state.idPedido,{
             method:"PUT",
             headers:{
                 "Accept":"application/json",
@@ -396,13 +409,54 @@ class ListPedidos extends Component{
 
     }
     
+    getClientes(){
+        fetch('http://localhost:8000/clientes',{
+            method:'GET',
+            headers:{
+                "Content-Type":"application/json; charset=utf-8",
+                "api_token":this.state.apiToken
+            }
+        })
+        .then(response=>response.json())
+        .then(data=>{
+            this.setState({
+                listadoClientes:data
+            });
+        })
+        .catch((error)=>{
+            console.log(error);
+        })
+    }
 
+    //seccion autocompletable cliente
+
+    onChange = (event, { newValue }) => {
+        this.setState({
+          value: newValue
+        });
+      };
+    
+    onSuggestionsFetchRequested = ({ value }) => {
+        this.setState({
+          suggestions: getSuggestions(value)
+        });
+    };
+    
+    // Autosuggest will call this function every time you need to clear suggestions.
+    onSuggestionsClearRequested = () => {
+        this.setState({
+          suggestions: []
+        });
+    };
+
+    //fin seccion autocompletable cliente
 
     componentDidMount(){
         this.getCadetes();
         this.getPedidos();
         this.getClienteDefault();
         this.getComisiones();
+        this.getClientes();
     }
 
  
@@ -424,6 +478,15 @@ class ListPedidos extends Component{
               preserveAspectRatio: 'xMidYMid slice',
             },
         }
+
+        const { value, suggestions } = this.state;
+
+        // Autosuggest will pass through all these props to the input.
+        const inputProps = {
+            placeholder: 'Type a programming language',
+            value,
+            onChange: this.onChange
+        };
 
         return(
            <div className="content">
@@ -539,7 +602,15 @@ class ListPedidos extends Component{
                                         <div className="col-md-6 pr-1">
                                             <div class="form-group">
                                                 <label>Cliente</label>
-                                                <input type="text" name="clienteName"  class="form-control" placeholder="Nombre cliente" onChange={this.handleChange.bind(this)} value={this.state.clienteName}/>
+                                                <Autosuggest
+                                                    class="form-control"
+                                                    suggestions={this.state.listadoClientes}
+                                                    onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+                                                    onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+                                                    getSuggestionValue={getSuggestionValue}
+                                                    renderSuggestion={renderSuggestion}
+                                                    inputProps={inputProps}
+                                                />
                                             </div>
                                         </div>
                                         <div class="col-md-6 pl-1">
