@@ -10,6 +10,17 @@ import Autosuggest from 'react-autosuggest';
 
 moment.locale('es');
 
+const languages = [
+    {
+        name:'csss'
+    },
+    {
+        name:'sdsdsd'
+    },
+    {
+        name:'za'
+    }
+];
 
 
   // Teach Autosuggest how to calculate suggestions for any given input value.
@@ -23,12 +34,13 @@ const getSuggestions = value => {
 };
   
 
-const getSuggestionValue = suggestion => suggestion.name;
+const getSuggestionValue = suggestion => suggestion.name+","+suggestion.id;
   
   // Use your imagination to render suggestions.
 const renderSuggestion = suggestion => (
-    <div className="alert alert-info">
-      {suggestion.name}
+    <div class="alert alert-info" style={{ listStyleType: "none" }}>
+        <span style={{ listStyleType: "none" }}>
+        <b> Cliente: </b> {suggestion.name}</span>
     </div>
 );
 
@@ -111,7 +123,7 @@ class ListPedidos extends Component{
     }
 
     getCadetes(){
-        fetch('http://localhost:8000/cadetes',{
+        fetch('https://3fa8b9d7.ngrok.io/cadetes',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -137,7 +149,7 @@ class ListPedidos extends Component{
     }
 
     getClienteDefault(){
-        fetch('http://localhost:8000/clientes/1',{
+        fetch('https://3fa8b9d7.ngrok.io/clientes/1',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -160,7 +172,7 @@ class ListPedidos extends Component{
         this.setState({
             loading:true,
         })
-        fetch('http://localhost:8000/pedidos',{
+        fetch('https://3fa8b9d7.ngrok.io/pedidos',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -262,8 +274,8 @@ class ListPedidos extends Component{
             })
         }
         else{
-            
-            fetch('http://localhost:8000/pedidos',{
+            //alert(this.state.clientePedidoId+" "+this.state.clienteName);
+            fetch('https://3fa8b9d7.ngrok.io/pedidos',{
                 method:'POST',
                 headers:{
                     "Accept":"application/json",
@@ -367,7 +379,7 @@ class ListPedidos extends Component{
             showFormEditarPedido:false,
             showLoadingEditarPedido:true
         })
-        fetch('http://localhost:8000/pedidos/'+this.state.idPedido,{
+        fetch('https://3fa8b9d7.ngrok.io/pedidos/'+this.state.idPedido,{
             method:"PUT",
             headers:{
                 "Accept":"application/json",
@@ -410,7 +422,7 @@ class ListPedidos extends Component{
     }
     
     getClientes(){
-        fetch('http://localhost:8000/clientes',{
+        fetch('https://3fa8b9d7.ngrok.io/clientes',{
             method:'GET',
             headers:{
                 "Content-Type":"application/json; charset=utf-8",
@@ -431,8 +443,12 @@ class ListPedidos extends Component{
     //seccion autocompletable cliente
 
     onChange = (event, { newValue }) => {
+        console.log(newValue);
+        let datos_cliente  = newValue.split(",");
         this.setState({
-          value: newValue
+          value: datos_cliente[0],
+          clienteName:datos_cliente[0],
+          clientePedidoId:datos_cliente[1]
         });
       };
     
@@ -483,7 +499,7 @@ class ListPedidos extends Component{
 
         // Autosuggest will pass through all these props to the input.
         const inputProps = {
-            placeholder: 'Type a programming language',
+            placeholder: 'Buscar cliente...',
             value,
             onChange: this.onChange
         };
@@ -536,7 +552,7 @@ class ListPedidos extends Component{
                                                 <th>Cliente</th>
                                                 <th>Direccion</th>
                                                 <th>Titulo</th>
-                                                <th>Cadete</th>
+                                                <th>Estado</th>
                                                 <th>Inicio</th>
                                                 <th>Llegada</th>
                                                 <th>Fin</th>
@@ -552,7 +568,11 @@ class ListPedidos extends Component{
                                                     <td><strong>{pedidos.cliente_name}</strong></td>
                                                     <td>{pedidos.adress.toLowerCase()}</td>
                                                     <td>{pedidos.order_title.toLowerCase()}</td>
-                                                    <td>cadete</td>
+                                                    <td>{pedidos.end_time  === '' ?
+                                                            <strong style={{color:'orange'}}>En curso</strong>
+                                                        :
+                                                            <strong style={{color:'#1E90FF'}}>Finalizado</strong>
+                                                        }</td>
                                                     <td>{pedidos.start_time}</td>
                                                     <td>
                                                         {pedidos.arrival_time === '' ?
@@ -580,7 +600,7 @@ class ListPedidos extends Component{
                         </div>
                     </div>
                 </div>
-                <Modal  show={this.state.showModalNuevoPedido} style={{marginTop:-150}}  size="lg" onHide={this.hiddenModalNuevoPedido} >
+                <Modal  show={this.state.showModalNuevoPedido} style={{marginTop:-250}}  size="lg" onHide={this.hiddenModalNuevoPedido} >
                     <Modal.Header closeButton>
                         <Modal.Title id="contained-modal-title-vcenter">
                             <strong>Nuevo pedido</strong>

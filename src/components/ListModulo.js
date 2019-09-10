@@ -15,7 +15,7 @@ class ListModulos extends Component{
                 <div className="sidebar-wrapper">
                     <div className="logo">
                         <a href="http://www.gogole.com" className="simple-text">
-                        Data
+                        <img src={require('../styles/img/motovip2.png')} />
                         </a>
                     </div>
                     <ul className="nav">

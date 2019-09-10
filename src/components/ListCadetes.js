@@ -72,7 +72,7 @@ class ListCadetes extends Component{
             loading:true,
             showListadoCadetes:false
         })
-        fetch('http://localhost:8000/cadetes',{
+        fetch('https://3fa8b9d7.ngrok.io/cadetes',{
             method:'GET',
             headers:{
                 "Content-Type":"application/json; charset=utf-8",
@@ -107,7 +107,7 @@ class ListCadetes extends Component{
                 showLoadingDelete:true,
                 descriptionDeleteCadete:false
             })
-            fetch('http://localhost:8000/cadetes',{
+            fetch('https://3fa8b9d7.ngrok.io/cadetes',{
                 method:'DELETE',
                 headers:{
                     'Accept':'application/json',
@@ -143,7 +143,7 @@ class ListCadetes extends Component{
                 showLoadingCadeteNuevo:true,
                 showFormNuevoCadete:false
             });
-            fetch('http://localhost:8000/cadetes',{
+            fetch('https://3fa8b9d7.ngrok.io/cadetes',{
                 method:"POST",
                 headers:{
                     "Accept":"application/json",
@@ -187,7 +187,7 @@ class ListCadetes extends Component{
                 showLoadingCadeteUpdate:true,
                 showFormUpdateCadete:false
             });
-            fetch('http://localhost:8000/cadetes/'+this.state.idCadete,{
+            fetch('https://3fa8b9d7.ngrok.io/cadetes/'+this.state.idCadete,{
                 method:"PUT",
                 headers:{
                     "Accept":"application/json",
@@ -324,8 +324,8 @@ class ListCadetes extends Component{
                             <div class="card">
                                 <div class="col-md-12 pr-1">
                                     <div class="form-group">
-                                        <label>Alta dsa</label><br/>
-                                        <Button variant="btn btn-success"  onClick={()=>this.modalNuevoCliente()}> Nuevo sada</Button>
+                                        <label>Alta cadete</label><br/>
+                                        <Button variant="btn btn-success"  onClick={()=>this.modalNuevoCliente()}> Nuevo cadete</Button>
                                     </div>
                                 </div>   
                             </div>
@@ -372,7 +372,7 @@ class ListCadetes extends Component{
                 <Modal  show={this.state.showModalCadete} style={{marginTop:-210}} size="lg" onHide={this.hiddenModalCadete} >
                     <Modal.Header closeButton>
                         <Modal.Title id="contained-modal-title-vcenter">
-                            <strong>Mosdo s</strong>
+                            <strong>Cadete</strong>
                         </Modal.Title>
                     </Modal.Header>
                     <Modal.Body> 
