@@ -43,7 +43,7 @@ class Login extends Component{
                 mensajeUsuario:'Debes ingresar el password'
             })
         }else{
-            fetch("https://911ded83.ngrok.io/users/login",{
+            fetch("https://3fa8b9d7.ngrok.io/users/login",{
                 method:"POST",
                 headers:{
                     "Accept" : "application/json",
@@ -112,7 +112,7 @@ class Login extends Component{
                     <div className="wrapper">
                         <form className="form-signin"  style={{marginTop:120,borderWidth: 1,borderColor: '#000'}}>       
                             <center>
-                                <h1>DATA</h1>
+                                <img src={require('../styles/img/motovip2.png')} />
                             </center>
                             <input type="text"  className="form-control" name="username" placeholder="Usuario.." value={this.state.username}  
                                 onChange={this.handleChange.bind(this)} style={{marginBottom:20 ,  height:50 , borderRadius:100}}/>
