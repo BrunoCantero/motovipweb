@@ -72,7 +72,7 @@ class ListCadetes extends Component{
             loading:true,
             showListadoCadetes:false
         })
-        fetch('https://3fa8b9d7.ngrok.io/cadetes',{
+        fetch('https://0134e2d3.ngrok.io/cadetes',{
             method:'GET',
             headers:{
                 "Content-Type":"application/json; charset=utf-8",
@@ -107,7 +107,7 @@ class ListCadetes extends Component{
                 showLoadingDelete:true,
                 descriptionDeleteCadete:false
             })
-            fetch('https://3fa8b9d7.ngrok.io/cadetes',{
+            fetch('https://0134e2d3.ngrok.io/cadetes',{
                 method:'DELETE',
                 headers:{
                     'Accept':'application/json',
@@ -143,7 +143,7 @@ class ListCadetes extends Component{
                 showLoadingCadeteNuevo:true,
                 showFormNuevoCadete:false
             });
-            fetch('https://3fa8b9d7.ngrok.io/cadetes',{
+            fetch('https://0134e2d3.ngrok.io/cadetes',{
                 method:"POST",
                 headers:{
                     "Accept":"application/json",
@@ -187,7 +187,7 @@ class ListCadetes extends Component{
                 showLoadingCadeteUpdate:true,
                 showFormUpdateCadete:false
             });
-            fetch('https://3fa8b9d7.ngrok.io/cadetes/'+this.state.idCadete,{
+            fetch('https://0134e2d3.ngrok.io/cadetes/'+this.state.idCadete,{
                 method:"PUT",
                 headers:{
                     "Accept":"application/json",

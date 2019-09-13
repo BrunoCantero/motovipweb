@@ -123,7 +123,7 @@ class ListPedidos extends Component{
     }
 
     getCadetes(){
-        fetch('https://3fa8b9d7.ngrok.io/cadetes',{
+        fetch('https://0134e2d3.ngrok.io/cadetes',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -149,7 +149,7 @@ class ListPedidos extends Component{
     }
 
     getClienteDefault(){
-        fetch('https://3fa8b9d7.ngrok.io/clientes/1',{
+        fetch('https://0134e2d3.ngrok.io/clientes/1',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -172,7 +172,7 @@ class ListPedidos extends Component{
         this.setState({
             loading:true,
         })
-        fetch('https://3fa8b9d7.ngrok.io/pedidos',{
+        fetch('https://0134e2d3.ngrok.io/pedidos',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -275,7 +275,7 @@ class ListPedidos extends Component{
         }
         else{
             //alert(this.state.clientePedidoId+" "+this.state.clienteName);
-            fetch('https://3fa8b9d7.ngrok.io/pedidos',{
+            fetch('https://0134e2d3.ngrok.io/pedidos',{
                 method:'POST',
                 headers:{
                     "Accept":"application/json",
@@ -379,7 +379,7 @@ class ListPedidos extends Component{
             showFormEditarPedido:false,
             showLoadingEditarPedido:true
         })
-        fetch('https://3fa8b9d7.ngrok.io/pedidos/'+this.state.idPedido,{
+        fetch('https://0134e2d3.ngrok.io/pedidos/'+this.state.idPedido,{
             method:"PUT",
             headers:{
                 "Accept":"application/json",
@@ -422,7 +422,7 @@ class ListPedidos extends Component{
     }
     
     getClientes(){
-        fetch('https://3fa8b9d7.ngrok.io/clientes',{
+        fetch('https://0134e2d3.ngrok.io/clientes',{
             method:'GET',
             headers:{
                 "Content-Type":"application/json; charset=utf-8",
