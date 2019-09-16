@@ -123,7 +123,7 @@ class ListPedidos extends Component{
     }
 
     getCadetes(){
-        fetch('https://0134e2d3.ngrok.io/cadetes',{
+        fetch('http://localhost:8000/cadetes',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -149,7 +149,7 @@ class ListPedidos extends Component{
     }
 
     getClienteDefault(){
-        fetch('https://0134e2d3.ngrok.io/clientes/1',{
+        fetch('http://localhost:8000/clientes/1',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -172,7 +172,7 @@ class ListPedidos extends Component{
         this.setState({
             loading:true,
         })
-        fetch('https://0134e2d3.ngrok.io/pedidos',{
+        fetch('http://localhost:8000/pedidos',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -275,7 +275,7 @@ class ListPedidos extends Component{
         }
         else{
             //alert(this.state.clientePedidoId+" "+this.state.clienteName);
-            fetch('https://0134e2d3.ngrok.io/pedidos',{
+            fetch('http://localhost:8000/pedidos',{
                 method:'POST',
                 headers:{
                     "Accept":"application/json",
@@ -379,7 +379,7 @@ class ListPedidos extends Component{
             showFormEditarPedido:false,
             showLoadingEditarPedido:true
         })
-        fetch('https://0134e2d3.ngrok.io/pedidos/'+this.state.idPedido,{
+        fetch('http://localhost:8000/pedidos/'+this.state.idPedido,{
             method:"PUT",
             headers:{
                 "Accept":"application/json",
@@ -422,7 +422,7 @@ class ListPedidos extends Component{
     }
     
     getClientes(){
-        fetch('https://0134e2d3.ngrok.io/clientes',{
+        fetch('http://localhost:8000/clientes',{
             method:'GET',
             headers:{
                 "Content-Type":"application/json; charset=utf-8",
@@ -553,8 +553,8 @@ class ListPedidos extends Component{
                                                 <th>Direccion</th>
                                                 <th>Titulo</th>
                                                 <th>Estado</th>
+                                                <th>Recepción</th>
                                                 <th>Inicio</th>
-                                                <th>Llegada</th>
                                                 <th>Fin</th>
                                                 <th><center>Total_compra</center></th>
                                                 <th><center>Comision_cadete</center></th>
@@ -569,7 +569,7 @@ class ListPedidos extends Component{
                                                     <td>{pedidos.adress.toLowerCase()}</td>
                                                     <td>{pedidos.order_title.toLowerCase()}</td>
                                                     <td>{pedidos.end_time  === '' ?
-                                                            <strong style={{color:'orange'}}>En curso</strong>
+                                                            <strong style={{color:'orange'}}>En espera</strong>
                                                         :
                                                             <strong style={{color:'#1E90FF'}}>Finalizado</strong>
                                                         }</td>
@@ -654,7 +654,7 @@ class ListPedidos extends Component{
                                         </div>
                                         <div class="col-md-6 pl-1">
                                             <div class="form-group">
-                                                <label>Hora inicio</label>
+                                                <label>Hora recepcion</label>
                                                 <input type="text" name="timeEntregaInicio" class="form-control" placeholder="Hora.." value={this.state.timeEntregaInicio} onChange={this.handleChange.bind(this)} onClick={()=>this.showHorario(1)}/>
                                                 {this.state.showHoraInicio &&
                                                     <TimeKeeper
@@ -669,7 +669,7 @@ class ListPedidos extends Component{
                                     <div className="row">
                                         <div className="col-md-6 pr-1">
                                             <div class="form-group">
-                                                <label>Total compra</label>
+                                                <label>Total servicio</label>
                                                 <input type="number" name="amountPedido"  
                                                     class="form-control" placeholder="Monto total" 
                                                     onChange={this.handleChange.bind(this)}
