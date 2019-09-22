@@ -1,6 +1,7 @@
 import React,{Component} from 'react';
 import { Modal,Button}   from 'react-bootstrap';
 import Lottie            from 'react-lottie';
+import api               from '../config/apiserver.js';
 
 class ListClientes extends Component{
 
@@ -68,7 +69,7 @@ class ListClientes extends Component{
             loading:true,
             showListadoClientes:false
         })
-        fetch('http://localhost:8000/clientes',{
+        fetch(api.server+'clientes',{
             method:'GET',
             headers:{
                 "Content-Type":"application/json; charset=utf-8",
@@ -103,7 +104,7 @@ class ListClientes extends Component{
                 showLoadingDelete:true,
                 descriptionDeleteCliente:false
             })
-            fetch('http://localhost:8000/clientes',{
+            fetch(api.server+'clientes',{
                 method:'DELETE',
                 headers:{
                     'Accept':'application/json',
@@ -138,7 +139,7 @@ class ListClientes extends Component{
                 showLoadingClienteNuevo:true,
                 showFormNuevoCliente:false
             });
-            fetch('http://localhost:8000/clientes',{
+            fetch(api.server+'clientes',{
                 method:"POST",
                 headers:{
                     "Accept":"application/json",
@@ -179,7 +180,7 @@ class ListClientes extends Component{
                 showLoadingClienteUpdate:true,
                 showFormUpdateCliente:false
             });
-            fetch('http://localhost:8000/clientes/'+this.state.idCliente,{
+            fetch(api.server+'clientes/'+this.state.idCliente,{
                 method:"PUT",
                 headers:{
                     "Accept":"application/json",
@@ -397,17 +398,13 @@ class ListClientes extends Component{
                                         <div className="row">
                                             <div className="col-md-6 pr-1">
                                                 <div class="form-group">
-                                                    <label>Barrio</label>
-                                                    <select className="form-control">
-                                                        <option value="1">La colonia</option>
-                                                        <option value="2">Villa del rosario</option>
-                                                    </select>
+                                                    <label>Direccion</label>
+                                                    <input type="text" name="addressCliente" class="form-control" placeholder="Direccion.." onChange={this.handleChange.bind(this)} value={this.state.addressCliente}/>
                                                 </div>
                                             </div>
                                             <div class="col-md-6 pl-1">
                                                 <div class="form-group">
-                                                    <label>Direccion</label>
-                                                    <input type="text" name="addressCliente" class="form-control" placeholder="Direccion.." onChange={this.handleChange.bind(this)} value={this.state.addressCliente}/>
+                                                  
                                                 </div>
                                             </div>
                                         </div>
@@ -473,17 +470,14 @@ class ListClientes extends Component{
                                         <div className="row">
                                             <div className="col-md-6 pr-1">
                                                 <div class="form-group">
-                                                    <label>Barrio</label>
-                                                    <select className="form-control">
-                                                        <option value="1">La colonia</option>
-                                                        <option value="2">Villa del rosario</option>
-                                                    </select>
+                                                    <label>Direccion</label>
+                                                    <input type="text" name="addressCliente" class="form-control" placeholder="Direccion.." onChange={this.handleChange.bind(this)} value={this.state.addressCliente}/>
                                                 </div>
+                                                
                                             </div>
                                             <div class="col-md-6 pl-1">
                                                 <div class="form-group">
-                                                    <label>Direccion</label>
-                                                    <input type="text" name="addressCliente" class="form-control" placeholder="Direccion.." onChange={this.handleChange.bind(this)} value={this.state.addressCliente}/>
+                                                   
                                                 </div>
                                             </div>
                                         </div>

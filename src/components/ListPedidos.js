@@ -1,11 +1,12 @@
 /* eslint-disable no-useless-constructor */
 import React ,{Component} from 'react';
-import { Modal,Button}   from 'react-bootstrap';
-import Calendar from 'react-calendar';
+import { Modal,Button}    from 'react-bootstrap';
+import Calendar           from 'react-calendar';
 import moment             from 'moment';
 import TimeKeeper         from 'react-timekeeper';
-import Lottie            from 'react-lottie';
-import Autosuggest from 'react-autosuggest';
+import Lottie             from 'react-lottie';
+import Autosuggest        from 'react-autosuggest';
+import api                from '../config/apiserver.js'
 
 
 moment.locale('es');
@@ -34,7 +35,7 @@ const getSuggestions = value => {
 };
   
 
-const getSuggestionValue = suggestion => suggestion.name+","+suggestion.id;
+const getSuggestionValue = suggestion => suggestion.name+","+suggestion.id+","+suggestion.adress;
   
   // Use your imagination to render suggestions.
 const renderSuggestion = suggestion => (
@@ -72,6 +73,7 @@ class ListPedidos extends Component{
             showLoadingPedido:false,
             showFormPedidoNuevo:true,
             listadoCadetes:[],
+            listadoCategoriaPedidos:[],
             listadoClientes:[],
             listadoPedidos:[],
             clienteName:'',
@@ -85,10 +87,13 @@ class ListPedidos extends Component{
             orderFeeCadete:0,
             comisionCadete:0,
             comisionEmpresa:0,
-            orderTitle: '',
+            lugarRetiroPedido : '',
+            lugarEntregaPedido : '',
+            orderTitle: 'Retiro pedido',
             orderDescription:'',
             usuarioId:iduser,
             cadeteId:0,
+            categoriaPedidoId:0,
             clientePedidoId:0,
             value: '',
             suggestions: []
@@ -110,8 +115,9 @@ class ListPedidos extends Component{
             addressPedido:'',
             amountPedido:0,
             orderFeeCadete:0,
-            orderTitle:'',
-            orderDescription:''
+            orderDescription:'',
+            lugarEntregaPedido:'',
+            lugarRetiroPedido:''
         })
         this.getHorarioEntregaPedido();
     }
@@ -123,7 +129,7 @@ class ListPedidos extends Component{
     }
 
     getCadetes(){
-        fetch('http://localhost:8000/cadetes',{
+        fetch(api.server+'cadetes',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -149,7 +155,7 @@ class ListPedidos extends Component{
     }
 
     getClienteDefault(){
-        fetch('http://localhost:8000/clientes/1',{
+        fetch(api.server+'clientes/1',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -172,7 +178,7 @@ class ListPedidos extends Component{
         this.setState({
             loading:true,
         })
-        fetch('http://localhost:8000/pedidos',{
+        fetch(api.server+'pedidos',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -261,6 +267,13 @@ class ListPedidos extends Component{
         })
     }
 
+    cambiarCategoriaPedido(event){
+        let categoria_id = event.target.value;
+        this.setState({
+            categoriaPedidoId : categoria_id
+        })
+    }
+
     guardarCompra(){
         this.setState({
             showFormPedidoNuevo:false,
@@ -272,10 +285,16 @@ class ListPedidos extends Component{
                 showFormPedidoNuevo:true,
                 showLoadingPedido:false
             })
+        }else if(this.state.categoriaPedidoId === 0){
+            alert("Debes seleccionar una categoria del pedido");
+            this.setState({
+                showFormPedidoNuevo:true,
+                showLoadingPedido:false
+            })
         }
         else{
-            //alert(this.state.clientePedidoId+" "+this.state.clienteName);
-            fetch('http://localhost:8000/pedidos',{
+            //alert(this.state.lugarEntregaPedido+" "+this.state.lugarRetiroPedido);
+            fetch(api.server+'pedidos',{
                 method:'POST',
                 headers:{
                     "Accept":"application/json",
@@ -293,9 +312,12 @@ class ListPedidos extends Component{
                     'order_fee_cadet':this.state.orderFeeCadete,
                     'order_title':this.state.orderTitle,
                     'order_description':this.state.orderDescription,
+                    'lugar_retiro':this.state.lugarRetiroPedido,
+                    'lugar_entrega' :this.state.lugarEntregaPedido,
                     'user_id':this.state.usuarioId,
                     'cadete_id':this.state.cadeteId,
-                    'cliente_id':this.state.clientePedidoId
+                    'cliente_id':this.state.clientePedidoId,
+                    'categoria_pedido_id':this.state.categoriaPedidoId
                 })
             })
             .then((response)=>response.json())
@@ -327,7 +349,7 @@ class ListPedidos extends Component{
         })
     }
 
-    editarPedidoDetalle(idpedido,idcadete,idcliente,cliete_name,direccion,start_pedido,arrival_time,end_time,comision_empresa,comision_motomandado,order_title,order_description,fecha_order,total_compra){
+    editarPedidoDetalle(idpedido,idcadete,idcliente,cliete_name,direccion,start_pedido,arrival_time,end_time,comision_empresa,comision_motomandado,order_title,order_description,fecha_order,total_compra,categoria_pedido_id,lugar_retiro,lugar_entrega){
         this.setState({
             showModalEditarPedido:true,
             showFormEditarPedido:true,
@@ -346,7 +368,10 @@ class ListPedidos extends Component{
             orderTitle:order_title,
             orderDescription:order_description,
             fechaOrder:fecha_order,
-            clientePedidoId:idcliente
+            clientePedidoId:idcliente,
+            categoriaPedidoId:categoria_pedido_id,
+            lugarRetiroPedido:lugar_retiro,
+            lugarEntregaPedido:lugar_entrega
         })
         //Buscar cadete
         this.getCadeteProfile(idcadete);
@@ -379,7 +404,7 @@ class ListPedidos extends Component{
             showFormEditarPedido:false,
             showLoadingEditarPedido:true
         })
-        fetch('http://localhost:8000/pedidos/'+this.state.idPedido,{
+        fetch(api.server+'pedidos/'+this.state.idPedido,{
             method:"PUT",
             headers:{
                 "Accept":"application/json",
@@ -398,9 +423,12 @@ class ListPedidos extends Component{
                 'order_fee_cadet':this.state.orderFeeCadete,
                 'order_title':this.state.orderTitle,
                 'order_description':this.state.orderDescription,
+                'lugar_retiro':this.state.lugarRetiroPedido,
+                'lugar_entrega' :this.state.lugarEntregaPedido,
                 'user_id':this.state.usuarioId,
                 'cadete_id':this.state.cadeteId,
-                'cliente_id':this.state.clientePedidoId
+                'cliente_id':this.state.clientePedidoId,
+                'categoria_pedido_id':this.state.categoriaPedidoId
             })
         })
         .then((response)=>response.json())
@@ -422,7 +450,7 @@ class ListPedidos extends Component{
     }
     
     getClientes(){
-        fetch('http://localhost:8000/clientes',{
+        fetch(api.server+'clientes',{
             method:'GET',
             headers:{
                 "Content-Type":"application/json; charset=utf-8",
@@ -431,6 +459,7 @@ class ListPedidos extends Component{
         })
         .then(response=>response.json())
         .then(data=>{
+            //console.log(data);
             this.setState({
                 listadoClientes:data
             });
@@ -440,15 +469,35 @@ class ListPedidos extends Component{
         })
     }
 
+    getCategoriasPedidos(){
+        fetch(api.server+'pedidos/categorias',{
+            method:'GET',
+            headers:{
+                'Content-Type':'application/json; charset=utf-8',
+                'api_token':this.state.apiToken
+            }
+        })
+        .then(response=>response.json())
+        .then(data=>{
+            this.setState({
+                listadoCategoriaPedidos:data
+            })
+        })
+        .catch((error)=>{
+            console.log(error);
+        })
+    }
+
     //seccion autocompletable cliente
 
     onChange = (event, { newValue }) => {
-        console.log(newValue);
+        //console.log(newValue);
         let datos_cliente  = newValue.split(",");
         this.setState({
           value: datos_cliente[0],
           clienteName:datos_cliente[0],
-          clientePedidoId:datos_cliente[1]
+          clientePedidoId:datos_cliente[1],
+          addressPedido: datos_cliente[2]
         });
       };
     
@@ -470,6 +519,7 @@ class ListPedidos extends Component{
     componentDidMount(){
         this.getCadetes();
         this.getPedidos();
+        this.getCategoriasPedidos();
         this.getClienteDefault();
         this.getComisiones();
         this.getClientes();
@@ -551,7 +601,7 @@ class ListPedidos extends Component{
                                             <tr>
                                                 <th>Cliente</th>
                                                 <th>Direccion</th>
-                                                <th>Titulo</th>
+                                                <th>Categoria</th>
                                                 <th>Estado</th>
                                                 <th>Recepción</th>
                                                 <th>Inicio</th>
@@ -590,7 +640,7 @@ class ListPedidos extends Component{
                                                     </td>
                                                     <td><center><strong style={{color:'green'}}>${pedidos.amount}</strong></center></td>
                                                     <td><center><strong style={{color:'red'}}>${pedidos.order_fee_cadet}</strong></center></td>
-                                                    <td><center><Button bsStyle="primary" onClick={()=>this.editarPedidoDetalle(pedidos.id,pedidos.cadete_id,pedidos.cliente_id,pedidos.cliente_name,pedidos.adress,pedidos.start_time,pedidos.arrival_time,pedidos.end_time,pedidos.order_fee_mv,pedidos.order_fee_cadet,pedidos.order_title,pedidos.order_description,pedidos.fecha_order,pedidos.amount)}> VER</Button></center></td>
+                                                    <td><center><Button bsStyle="primary" onClick={()=>this.editarPedidoDetalle(pedidos.id,pedidos.cadete_id,pedidos.cliente_id,pedidos.cliente_name,pedidos.adress,pedidos.start_time,pedidos.arrival_time,pedidos.end_time,pedidos.order_fee_mv,pedidos.order_fee_cadet,pedidos.order_title,pedidos.order_description,pedidos.fecha_order,pedidos.amount,pedidos.categoria_pedido_id,pedidos.lugar_retiro,pedidos.lugar_entrega)}> VER</Button></center></td>
                                                 </tr>
                                             )}
                                         </tbody>        
@@ -684,8 +734,14 @@ class ListPedidos extends Component{
                                         </div>
                                         <div class="col-md-6 pl-1">
                                             <div class="form-group">
-                                                <label>Titulo compra</label>
-                                                <input type="text" name="orderTitle" class="form-control" placeholder="Pago de cuentas, retirar comida.." onChange={this.handleChange.bind(this)} value={this.state.orderTitle}/>
+                                                <label>Categoria pedido</label>
+                                                
+                                                <select className="form-control" value={this.state.categoriaPedidoId} onChange={this.cambiarCategoriaPedido.bind(this)}>
+                                                    <option value="0">Seleccionar categoria</option>
+                                                    {this.state.listadoCategoriaPedidos.map((categorias,item)=>
+                                                        <option key={item+1} value={categorias.id}>{categorias.categoria_pedido}</option>
+                                                    )}
+                                                </select>
                                             </div>
                                         </div>
                                     </div>
@@ -700,6 +756,20 @@ class ListPedidos extends Component{
                                             <div class="form-group">
                                                 <label>Comision cadete <strong>{this.state.comisionCadete}%</strong></label>
                                                 <input type="number" name="orderFeeCadete" class="form-control" placeholder="Pago de cuentas, retirar comida.." onChange={this.handleChange.bind(this)} value={this.state.orderFeeCadete}/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-md-6 pr-1">
+                                            <div class="form-group">
+                                                <label>Lugar retiro</label>
+                                                <input type="text" name="lugarRetiroPedido"  class="form-control" placeholder="Donde retira el pedido" onChange={this.handleChange.bind(this)} value={this.state.lugarRetiroPedido}/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 pl-1">
+                                            <div class="form-group">
+                                                <label>Lugar entrega </label>
+                                                <input type="text" name="lugarEntregaPedido" class="form-control" placeholder="Donde entrega el pedido" onChange={this.handleChange.bind(this)} value={this.state.lugarEntregaPedido}/>
                                             </div>
                                         </div>
                                     </div>
@@ -722,7 +792,7 @@ class ListPedidos extends Component{
                         <Button onClick={()=>this.guardarCompra()} variant="btn btn-success" style={{marginTop:10}}>Guardar pedido</Button>
                     </Modal.Footer>
                 </Modal>
-                <Modal  show={this.state.showModalEditarPedido} style={{marginTop:-150}}  size="lg" onHide={this.hiddenModalEditarPedido} >
+                <Modal  show={this.state.showModalEditarPedido} style={{marginTop:-250}}  size="lg" onHide={this.hiddenModalEditarPedido} >
                     <Modal.Header closeButton>
                         <Modal.Title id="contained-modal-title-vcenter">
                             <strong>#PEDIDO {this.state.idPedido} {this.state.timeEntregaInicio}</strong>
@@ -765,7 +835,11 @@ class ListPedidos extends Component{
                                         <div className="col-md-4 pr-1">
                                             <div class="form-group">
                                                 <label style={{fontWeight:'bold',color:'gray'}}>Cadete</label>
-                                                <input type="text" name="nombreCadete" class="form-control"  value={this.state.nombreCadete}/>
+                                                <select className="form-control" value={this.state.cadeteId} onChange={this.cambiarCadete.bind(this)}>
+                                                    {this.state.listadoCadetes.map((cadetes,item)=>
+                                                        <option key={item+1} value={cadetes.id}>{cadetes.name}</option>  
+                                                    )}
+                                                </select>
                                             </div>
                                         </div>
                                         <div class="col-md-4 pl-1">
@@ -826,11 +900,29 @@ class ListPedidos extends Component{
                                         </div>
                                     </div>
                                     <hr/>
-                                    <div class="row">
-                                        <div class="col-md-12">
+                                    <div className="row">
+                                        <div class="col-md-4 pl-1">
                                             <div class="form-group">
-                                                <label>Compra</label>
-                                                <input type="text" name="orderTitle" class="form-control" placeholder="Comision empresa.." onChange={this.handleChange.bind(this)} value={this.state.orderTitle}/>
+                                                <label>Categoria pedido</label>
+                                                
+                                                <select className="form-control" value={this.state.categoriaPedidoId} onChange={this.cambiarCategoriaPedido.bind(this)}>
+                                                    <option value="0">Seleccionar categoria</option>
+                                                    {this.state.listadoCategoriaPedidos.map((categorias,item)=>
+                                                        <option key={item+1} value={categorias.id}>{categorias.categoria_pedido}</option>
+                                                    )}
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div className="col-md-4 pr-1">
+                                            <div class="form-group">
+                                                <label>Lugar retiro</label>
+                                                <input type="text" name="lugarRetiroPedido"  class="form-control" placeholder="Donde retira el pedido" onChange={this.handleChange.bind(this)} value={this.state.lugarRetiroPedido}/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 pl-1">
+                                            <div class="form-group">
+                                                <label>Lugar entrega </label>
+                                                <input type="text" name="lugarEntregaPedido" class="form-control" placeholder="Donde entrega el pedido" onChange={this.handleChange.bind(this)} value={this.state.lugarEntregaPedido}/>
                                             </div>
                                         </div>
                                     </div>

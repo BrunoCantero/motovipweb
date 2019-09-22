@@ -1,6 +1,7 @@
 import React,{Component} from 'react';
 import { Modal,Button}   from 'react-bootstrap';
 import Lottie            from 'react-lottie';
+import api               from '../config/apiserver.js';
 
 class ListCadetes extends Component{
 
@@ -72,7 +73,7 @@ class ListCadetes extends Component{
             loading:true,
             showListadoCadetes:false
         })
-        fetch('http://localhost:8000/cadetes',{
+        fetch(api.server+'cadetes',{
             method:'GET',
             headers:{
                 "Content-Type":"application/json; charset=utf-8",
@@ -107,7 +108,7 @@ class ListCadetes extends Component{
                 showLoadingDelete:true,
                 descriptionDeleteCadete:false
             })
-            fetch('http://localhost:8000/cadetes',{
+            fetch(api.server+'cadetes',{
                 method:'DELETE',
                 headers:{
                     'Accept':'application/json',
@@ -143,7 +144,7 @@ class ListCadetes extends Component{
                 showLoadingCadeteNuevo:true,
                 showFormNuevoCadete:false
             });
-            fetch('http://localhost:8000/cadetes',{
+            fetch(api.server+'cadetes',{
                 method:"POST",
                 headers:{
                     "Accept":"application/json",
@@ -187,7 +188,7 @@ class ListCadetes extends Component{
                 showLoadingCadeteUpdate:true,
                 showFormUpdateCadete:false
             });
-            fetch('http://localhost:8000/cadetes/'+this.state.idCadete,{
+            fetch(api.server+'cadetes/'+this.state.idCadete,{
                 method:"PUT",
                 headers:{
                     "Accept":"application/json",

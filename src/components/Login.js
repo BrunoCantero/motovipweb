@@ -1,8 +1,9 @@
 /* eslint-disable jsx-a11y/alt-text */
 import React,{Component} from 'react';
-import {Redirect} from 'react-router-dom';
-import Button from 'antd/es/button';
+import {Redirect}        from 'react-router-dom';
+import Button            from 'antd/es/button';
 import Lottie            from 'react-lottie';
+import api               from '../config/apiserver.js';
 
 class Login extends Component{
 
@@ -43,7 +44,7 @@ class Login extends Component{
                 mensajeUsuario:'Debes ingresar el password'
             })
         }else{
-            fetch("http://localhost:8000/users/login",{
+            fetch(api.server+"users/login",{
                 method:"POST",
                 headers:{
                     "Accept" : "application/json",
