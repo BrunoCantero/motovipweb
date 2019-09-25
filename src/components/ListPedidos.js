@@ -81,7 +81,7 @@ class ListPedidos extends Component{
             arrivalTimePedido:'',
             endTimePedido:'',
             addressPedido:'',
-            amountPedido : 0,
+            amountPedido : '',
             idPedido: 0,
             orderFeeMotovip: 0,
             orderFeeCadete:0,
@@ -113,7 +113,7 @@ class ListPedidos extends Component{
             showFormPedidoNuevo:true,
             showLoadingPedido:false,
             addressPedido:'',
-            amountPedido:0,
+            amountPedido:'',
             orderFeeCadete:0,
             orderDescription:'',
             lugarEntregaPedido:'',
@@ -149,8 +149,8 @@ class ListPedidos extends Component{
 
     getComisiones(){
         this.setState({
-            comisionCadete:5,
-            comisionEmpresa:3
+            comisionCadete:75,
+            comisionEmpresa:25
         })
     }
 
@@ -338,15 +338,24 @@ class ListPedidos extends Component{
         }
     }
 
-    calcularComisiones(){
-        let comision_cadete = 10+5;
-        let comision_empresa = 5+25;
+    esEntero(numero){
+        if (numero % 1 == 0) {
+            return true
+        } else {
+            return false
+        }
+    }    
 
-        //alert(comision_cadete+" "+comision_empresa);
-        this.setState({
-            orderFeeCadete : comision_cadete,
-            orderFeeMotovip :comision_empresa
-        })
+    calcularComisiones(){
+        
+        if(this.state.amountPedido>=0){
+            let comision_cadete = this.state.amountPedido * 0.75;
+            let comision_empresa = this.state.amountPedido * 0.25;
+            this.setState({
+                orderFeeCadete :comision_cadete.toFixed(2),
+                orderFeeMotovip :comision_empresa.toFixed(2)
+            });
+        }
     }
 
     editarPedidoDetalle(idpedido,idcadete,idcliente,cliete_name,direccion,start_pedido,arrival_time,end_time,comision_empresa,comision_motomandado,order_title,order_description,fecha_order,total_compra,categoria_pedido_id,lugar_retiro,lugar_entrega){
@@ -606,8 +615,9 @@ class ListPedidos extends Component{
                                                 <th>Recepción</th>
                                                 <th>Inicio</th>
                                                 <th>Fin</th>
-                                                <th><center>Total_compra</center></th>
+                                                <th><center>Total</center></th>
                                                 <th><center>Comision_cadete</center></th>
+                                                <th><center>Comision_motovip</center></th>
                                                 <th>Detalle</th>
                                             </tr>
                                         </thead>
@@ -618,11 +628,25 @@ class ListPedidos extends Component{
                                                     <td><strong>{pedidos.cliente_name}</strong></td>
                                                     <td>{pedidos.adress.toLowerCase()}</td>
                                                     <td>{pedidos.order_title.toLowerCase()}</td>
-                                                    <td>{pedidos.end_time  === '' ?
-                                                            <strong style={{color:'orange'}}>En espera</strong>
+                                                    <td>{
+                                                            pedidos.start_time  !== '' && pedidos.arrival_time === '' && pedidos.end_time === ''?
+                                                            <strong style={{color:'red'}}>En espera</strong>
                                                         :
-                                                            <strong style={{color:'#1E90FF'}}>Finalizado</strong>
-                                                        }</td>
+                                                            null
+                                                        }
+                                                        {
+                                                            pedidos.start_time  !== '' && pedidos.arrival_time !== '' && pedidos.end_time === ''?
+                                                            <strong style={{color:'blue'}}>En curso</strong>
+                                                        :
+                                                            null
+                                                        }
+                                                        {
+                                                            pedidos.start_time  !== '' && pedidos.arrival_time !== '' && pedidos.end_time !== ''?
+                                                            <strong style={{color:'green'}}>Finalizado</strong>
+                                                        :
+                                                            null
+                                                        }
+                                                    </td>
                                                     <td>{pedidos.start_time}</td>
                                                     <td>
                                                         {pedidos.arrival_time === '' ?
@@ -640,6 +664,7 @@ class ListPedidos extends Component{
                                                     </td>
                                                     <td><center><strong style={{color:'green'}}>${pedidos.amount}</strong></center></td>
                                                     <td><center><strong style={{color:'red'}}>${pedidos.order_fee_cadet}</strong></center></td>
+                                                    <td><center><strong style={{color:'red'}}>${pedidos.order_fee_mv}</strong></center></td>
                                                     <td><center><Button bsStyle="primary" onClick={()=>this.editarPedidoDetalle(pedidos.id,pedidos.cadete_id,pedidos.cliente_id,pedidos.cliente_name,pedidos.adress,pedidos.start_time,pedidos.arrival_time,pedidos.end_time,pedidos.order_fee_mv,pedidos.order_fee_cadet,pedidos.order_title,pedidos.order_description,pedidos.fecha_order,pedidos.amount,pedidos.categoria_pedido_id,pedidos.lugar_retiro,pedidos.lugar_entrega)}> VER</Button></center></td>
                                                 </tr>
                                             )}
@@ -719,7 +744,7 @@ class ListPedidos extends Component{
                                     <div className="row">
                                         <div className="col-md-6 pr-1">
                                             <div class="form-group">
-                                                <label>Total servicio</label>
+                                                <label>Total</label>
                                                 <input type="number" name="amountPedido"  
                                                     class="form-control" placeholder="Monto total" 
                                                     onChange={this.handleChange.bind(this)}
@@ -748,7 +773,7 @@ class ListPedidos extends Component{
                                     <div className="row">
                                         <div className="col-md-6 pr-1">
                                             <div class="form-group">
-                                                <label>Comision moto <strong>{this.state.comisionEmpresa}%</strong></label>
+                                                <label>Comision motovip <strong>{this.state.comisionEmpresa}%</strong></label>
                                                 <input type="number" name="orderFeeMotovip"  class="form-control" placeholder="Monto total" onChange={this.handleChange.bind(this)} value={this.state.orderFeeMotovip}/>
                                             </div>
                                         </div>
@@ -825,7 +850,7 @@ class ListPedidos extends Component{
                                         </div>
                                         <div class="col-md-4 pl-1">
                                             <div class="form-group">
-                                                <label style={{fontWeight:'bold',color:'gray'}}>Hora inicio</label>
+                                                <label style={{fontWeight:'bold',color:'gray'}}>Hora recepcion</label>
                                                 <input type="text" name="timeEntregaInicio" class="form-control" placeholder="Inicio.." onChange={this.handleChange.bind(this)} value={this.state.timeEntregaInicio}/>
                                             </div>
                                         </div>
@@ -844,8 +869,8 @@ class ListPedidos extends Component{
                                         </div>
                                         <div class="col-md-4 pl-1">
                                             <div class="form-group">
-                                                <label style={{fontWeight:'bold',color:'gray'}}>Hora llegada</label>
-                                                <input type="text" name="timeLlegadaPedido" class="form-control" placeholder="Llegada.." value={this.state.timeLlegadaPedido} onChange={this.handleChange.bind(this)} onClick={()=>this.showHorario(2)}/>
+                                                <label style={{fontWeight:'bold',color:'gray'}}>Hora Inicio</label>
+                                                <input type="text" name="timeLlegadaPedido" class="form-control" placeholder="inicio.." value={this.state.timeLlegadaPedido} onChange={this.handleChange.bind(this)} onClick={()=>this.showHorario(2)}/>
                                                 {this.state.showHoraLlegada &&
                                                     <TimeKeeper
                                                         switchToMinuteOnHourSelect={true}

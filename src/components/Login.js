@@ -113,7 +113,7 @@ class Login extends Component{
                     <div className="wrapper">
                         <form className="form-signin"  style={{marginTop:120,borderWidth: 1,borderColor: '#000'}}>       
                             <center>
-                                <img src={require('../styles/img/motovip2.png')} />
+                                <img src={require('../styles/img/logo.jpg')} style={{height:200,marginTop:50,marginBottom:30,width:200,borderRadius:200}}/>
                             </center>
                             <input type="text"  className="form-control" name="username" placeholder="Usuario.." value={this.state.username}  
                                 onChange={this.handleChange.bind(this)} style={{marginBottom:20 ,  height:50 , borderRadius:100}}/>
