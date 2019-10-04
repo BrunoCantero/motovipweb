@@ -1,5 +1,5 @@
 const api ={
-    server:'https://28c5581f.ngrok.io/',
+    server:'http://localhost:8000/',
     version: '0.0.1',
 }
 

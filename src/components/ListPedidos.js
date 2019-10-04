@@ -7,7 +7,7 @@ import TimeKeeper         from 'react-timekeeper';
 import Lottie             from 'react-lottie';
 import Autosuggest        from 'react-autosuggest';
 import api                from '../config/apiserver.js'
-
+import loadingGif           from '../styles/img/loading.gif'
 
 moment.locale('es');
 
@@ -69,6 +69,7 @@ class ListPedidos extends Component{
             nombreCadete:'',
             apiToken : apitoken,
             showHoraInicio:false,
+            showLoadingGif:false,
             loading:false,
             showLoadingPedido:false,
             showFormPedidoNuevo:true,
@@ -322,7 +323,7 @@ class ListPedidos extends Component{
             })
             .then((response)=>response.json())
             .then((responseJson)=>{
-                this.sleep(3000).then(() => {
+                this.sleep(2000).then(() => {
                     // Do something after the sleep!
                     this.setState({
                         showFormPedidoNuevo:false,
@@ -442,7 +443,7 @@ class ListPedidos extends Component{
         })
         .then((response)=>response.json())
         .then((responseJson)=>{
-            this.sleep(3000).then(() => {
+            this.sleep(2000).then(() => {
                 // Do something after the sleep!
                 this.setState({
                     showFormEditarPedido:false,
@@ -524,6 +525,97 @@ class ListPedidos extends Component{
     };
 
     //fin seccion autocompletable cliente
+   
+
+    saveHoraRecepcion(idpedido,hora){
+        //alert(this.state.apiToken)
+        if(idpedido !== ''){
+            fetch(api.server+'pedidos/reception_time',{
+                method:"PUT",
+                headers:{
+                    "Accept":"application/json",
+                    "Content-Type":"application/json",
+                    "api_token":this.state.apiToken
+                },
+                body:JSON.stringify({
+                    'idpedido':idpedido,
+                    'arrival_time':hora
+                })
+            })
+            .then((response)=>response.json())
+            .then((responseJson)=>{
+                console.log(responseJson)
+            })
+            .catch((error)=>{
+                console.log(error);
+            })
+        }
+    }
+
+    finHoraRecepcion(idpedido,hora){
+        //alert(this.state.apiToken)
+        if(idpedido !== ''){
+            fetch(api.server+'pedidos/fin_time',{
+                method:"PUT",
+                headers:{
+                    "Accept":"application/json",
+                    "Content-Type":"application/json",
+                    "api_token":this.state.apiToken
+                },
+                body:JSON.stringify({
+                    'idpedido':idpedido,
+                    'end_time':hora
+                })
+            })
+            .then((response)=>response.json())
+            .then((responseJson)=>{
+                console.log(responseJson)
+            })
+            .catch((error)=>{
+                console.log(error);
+            })
+        }
+    }
+
+    endHoraPedido(idTable,idpedido){
+        let hora_fin = moment().format('HH:mm:ss');
+        this.finHoraRecepcion(idpedido,hora_fin);
+        this.setState({
+            showLoadingGif:true
+        });
+
+        this.sleep(2000).then(() => {
+            // Do something after the sleep!
+            this.setState({
+                showLoadingGif:false
+            });
+            var lista = document.getElementById("pedidos");
+            lista.rows[idTable].cells[6].innerHTML=hora_fin;
+            lista.rows[idTable].cells[3].innerHTML="<strong style=color:green>Finalizado</strong>";
+        })
+
+
+
+    }
+
+    initHoraPedido(idTable,idpedido){
+        let hora_init = moment().format('HH:mm:ss');
+        this.saveHoraRecepcion(idpedido,hora_init);
+        this.setState({
+            showLoadingGif:true
+        });
+        this.sleep(2000).then(() => {
+            // Do something after the sleep!
+            this.setState({
+                showLoadingGif:false
+            });
+            var lista = document.getElementById("pedidos");
+            lista.rows[idTable].cells[5].innerHTML=hora_init;
+            lista.rows[idTable].cells[3].innerHTML="<strong style=color:blue>En curso</strong>";
+        })
+
+        
+    }
 
     componentDidMount(){
         this.getCadetes();
@@ -600,12 +692,12 @@ class ListPedidos extends Component{
                                     this.state.loading &&
                                         <div>
                                             <center>
-                                                <Lottie options={loading} height={120} width={'9%'} />
+                                                <img src={loadingGif} style={{width:40,height:40}}/>
                                             </center>
                                         </div>
                                 }
                                 <div class="card-body table-full-width table-responsive" id="printablediv">
-                                    <table  className="table table-hover table-striped">
+                                    <table  className="table table-hover table-striped" id="pedidos">
                                         <thead>
                                             <tr>
                                                 <th>Cliente</th>
@@ -618,7 +710,13 @@ class ListPedidos extends Component{
                                                 <th><center>Total</center></th>
                                                 <th><center>Comision_cadete</center></th>
                                                 <th><center>Comision_motovip</center></th>
-                                                <th>Detalle</th>
+                                                <th>
+                                                    <center>Acciones 
+                                                        {this.state.showLoadingGif &&
+                                                            <img src={loadingGif} style={{width:40,height:40}}/>
+                                                        }
+                                                    </center>
+                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -628,7 +726,7 @@ class ListPedidos extends Component{
                                                     <td><strong>{pedidos.cliente_name}</strong></td>
                                                     <td>{pedidos.adress.toLowerCase()}</td>
                                                     <td>{pedidos.order_title.toLowerCase()}</td>
-                                                    <td>{
+                                                    <td id="estado">{
                                                             pedidos.start_time  !== '' && pedidos.arrival_time === '' && pedidos.end_time === ''?
                                                             <strong style={{color:'red'}}>En espera</strong>
                                                         :
@@ -665,7 +763,13 @@ class ListPedidos extends Component{
                                                     <td><center><strong style={{color:'green'}}>${pedidos.amount}</strong></center></td>
                                                     <td><center><strong style={{color:'red'}}>${pedidos.order_fee_cadet}</strong></center></td>
                                                     <td><center><strong style={{color:'red'}}>${pedidos.order_fee_mv}</strong></center></td>
-                                                    <td><center><Button bsStyle="primary" onClick={()=>this.editarPedidoDetalle(pedidos.id,pedidos.cadete_id,pedidos.cliente_id,pedidos.cliente_name,pedidos.adress,pedidos.start_time,pedidos.arrival_time,pedidos.end_time,pedidos.order_fee_mv,pedidos.order_fee_cadet,pedidos.order_title,pedidos.order_description,pedidos.fecha_order,pedidos.amount,pedidos.categoria_pedido_id,pedidos.lugar_retiro,pedidos.lugar_entrega)}> VER</Button></center></td>
+                                                    <td>
+                                                        <center>
+                                                            <Button bsStyle="primary" onClick={()=>this.editarPedidoDetalle(pedidos.id,pedidos.cadete_id,pedidos.cliente_id,pedidos.cliente_name,pedidos.adress,pedidos.start_time,pedidos.arrival_time,pedidos.end_time,pedidos.order_fee_mv,pedidos.order_fee_cadet,pedidos.order_title,pedidos.order_description,pedidos.fecha_order,pedidos.amount,pedidos.categoria_pedido_id,pedidos.lugar_retiro,pedidos.lugar_entrega)}> VER</Button>
+                                                            <Button variant="success" onClick={()=>this.initHoraPedido(item+1,pedidos.id)} style={{marginLeft:10,marginRight:10}}>IN </Button>
+                                                            <Button variant="warning" onClick={()=>this.endHoraPedido(item+1,pedidos.id)}>Fin </Button>
+                                                        </center>
+                                                    </td>
                                                 </tr>
                                             )}
                                         </tbody>        
