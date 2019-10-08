@@ -1,5 +1,5 @@
 const api ={
-    server:'http://localhost:8000/',
+    server:'http://192.34.60.29/api/v1/',
     version: '0.0.1',
 }
 
