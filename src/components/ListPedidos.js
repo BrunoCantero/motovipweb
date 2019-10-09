@@ -8,6 +8,7 @@ import Lottie             from 'react-lottie';
 import Autosuggest        from 'react-autosuggest';
 import api                from '../config/apiserver.js'
 import loadingGif           from '../styles/img/loading.gif'
+import {Pagination} from 'antd';
 
 moment.locale('es');
 
@@ -774,6 +775,10 @@ class ListPedidos extends Component{
                                             )}
                                         </tbody>        
                                     </table>
+                                    <Pagination showSizeChanger
+                                    defaultCurrent={3}
+                                    total={500} style={{alignContent:'center',justifyContent:'center', display:'inline-block',
+                                    marginLeft: 350,}} />
                                 </div>
                             </div>
                         </div>
