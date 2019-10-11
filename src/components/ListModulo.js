@@ -38,8 +38,8 @@ class ListModulos extends Component{
                             </NavLink>
                         </li>
                         <li className="nav-item">
-                            <NavLink  exac to='/cadetes' className="nav-link" activeStyle={{ color: 'gray',backgroundColor:'#fff',fontWeight:'bold' }}>
-                                <i className="nc-icon nc-paper"></i>
+                            <NavLink  exac to='/reportes' className="nav-link" activeStyle={{ color: 'gray',backgroundColor:'#fff',fontWeight:'bold' }}>
+                                <i className="nc-icon nc-bullet-list-67"></i>
                                 <p>REPORTES</p>
                             </NavLink>
                         </li>

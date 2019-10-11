@@ -155,24 +155,24 @@ class ListCadetes extends Component{
                     name           : this.state.nameCadete,
                     profile        : "user.jpg",
                     dni            : this.state.dniCadete,
-                    vehicle_patent : this.state.patenteCadete,
-                    adress         : this.state.addressCadete,
-                    phone_number   : this.state.phoneNumberCadete,
-                    description    : this.state.descriptionCadete
-                })
-            })
-            .then((response)=>response.json())
-            .then((responseJson)=>{
-                this.sleep(3000).then(() => {
-                    // Do something after the sleep!
-                    this.setState({
-                        showLoadingCadeteNuevo:false,
-                        showFormNuevoCadete:false
+                        vehicle_patent : this.state.patenteCadete,
+                        adress         : this.state.addressCadete,
+                        phone_number   : this.state.phoneNumberCadete,
+                        description    : this.state.descriptionCadete
                     })
-                    this.getCadetes();
-                    this.hiddenModalNuevoCadete();
                 })
-            })
+                .then((response)=>response.json())
+                .then((responseJson)=>{
+                    this.sleep(3000).then(() => {
+                        // Do something after the sleep!
+                        this.setState({
+                            showLoadingCadeteNuevo:false,
+                            showFormNuevoCadete:false
+                        })
+                        this.getCadetes();
+                        this.hiddenModalNuevoCadete();
+                    })
+                })
             .catch((error)=>{
                 console.log(error);
             })

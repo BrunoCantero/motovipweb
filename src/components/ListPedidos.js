@@ -411,6 +411,23 @@ class ListPedidos extends Component{
     }
 
     updatePedido(){
+        console.log('cliente_name '+this.state.clienteName+
+        'fecha_order: '+this.state.fechaOrder+
+        'start_time: '+this.state.timeEntregaInicio+
+        'arrival_time : '+this.state.timeLlegadaPedido+
+        'end_time: '+this.state.timeFinPedido+
+        'adress :'+this.state.addressPedido+
+        'amount :'+this.state.amountPedido+
+        'order_fee_mv :'+this.state.orderFeeMotovip+
+        'order_fee_cadet '+this.state.orderFeeCadete+
+        'order_title :'+this.state.orderTitle+
+        'order_description: '+this.state.orderDescription+
+        'lugar_retiro :'+this.state.lugarRetiroPedido,
+        'lugar_entrega :'+ this.state.lugarEntregaPedido+
+        'user_id '+this.state.usuarioId+
+        'cadete_id '+this.state.cadeteId+
+        'cliente_id '+this.state.clientePedidoId+
+        'categoria_pedido_id'+this.state.categoriaPedidoId)
         this.setState({
             showFormEditarPedido:false,
             showLoadingEditarPedido:true

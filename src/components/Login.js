@@ -117,7 +117,16 @@ class Login extends Component{
                             </center>
                             <input type="text"  className="form-control" name="username" placeholder="Usuario.." value={this.state.username}  
                                 onChange={this.handleChange.bind(this)} style={{marginBottom:20 ,  height:50 , borderRadius:100}}/>
-                            <input type="password"  className="form-control" name="password" placeholder="Password.." value={this.state.password} onChange={this.handleChange.bind(this)} style={{marginTop:10, borderRadius:100, height:50}}/> 
+                            <input type="password" 
+                                 className="form-control" name="password" 
+                                placeholder="Password.."  value={this.state.password} 
+                                onKeyPress={event=>{
+                                    if(event.key === 'Enter'){
+                                        this.onLogin();
+                                    }
+                                }}
+                                onChange={this.handleChange.bind(this)} 
+                                style={{marginTop:10, borderRadius:100, height:50}}/> 
                             {this.state.showMensajeUsuario &&
                                 <div className="alert alert-danger" role="alert" style={{marginTop:20}}> 
                                     <strong>MENSAJE</strong> {this.state.mensajeUsuario}

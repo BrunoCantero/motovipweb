@@ -4,6 +4,7 @@ import Login     from './components/Login.js';
 import Dashboard from './components/Dashboard.js';
 import Cadetes from './components/Cadetes.js';
 import Clientes from './components/Clientes';
+import Reportes from './components/Reportes';
 
 const Routes = () =>(
     <BrowserRouter>
@@ -13,6 +14,7 @@ const Routes = () =>(
             <Route path="/dashboard" component={Dashboard}/>
             <Route path="/cadetes"   component={Cadetes}/>
             <Route path="/clientes"  component={Clientes}/>
+            <Route path="/reportes"  component={Reportes}/>
         </Switch>
     </BrowserRouter>
 )
