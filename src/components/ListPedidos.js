@@ -411,7 +411,7 @@ class ListPedidos extends Component{
     }
 
     updatePedido(){
-        console.log('cliente_name '+this.state.clienteName+
+        /*console.log('cliente_name '+this.state.clienteName+
         'fecha_order: '+this.state.fechaOrder+
         'start_time: '+this.state.timeEntregaInicio+
         'arrival_time : '+this.state.timeLlegadaPedido+
@@ -427,7 +427,7 @@ class ListPedidos extends Component{
         'user_id '+this.state.usuarioId+
         'cadete_id '+this.state.cadeteId+
         'cliente_id '+this.state.clientePedidoId+
-        'categoria_pedido_id'+this.state.categoriaPedidoId)
+        'categoria_pedido_id'+this.state.categoriaPedidoId)*/
         this.setState({
             showFormEditarPedido:false,
             showLoadingEditarPedido:true
