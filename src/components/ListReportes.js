@@ -7,6 +7,7 @@ import api               from '../config/apiserver.js';
 import Calendar          from 'react-calendar';
 import moment             from 'moment';
 import loadingGif         from '../styles/img/loading.gif'
+import {TimePicker} from 'antd';
 
 class ListReportes extends Component{
 
@@ -171,7 +172,9 @@ class ListReportes extends Component{
                                                                 onChange={this.onChangeFechaSeleccionadaDesdeCadete.bind(this)}
                                                                 value={this.state.dateDesdeCadete}
                                                             />
+                                                            
                                                         }
+                                                        <TimePicker placeholder={'ingresa Hora'} style={{marginTop:5,}} defaultValue={''} format={'HH:mm'} />
                                                     </div>
                                                 </div>    
                                             </div>
@@ -188,6 +191,8 @@ class ListReportes extends Component{
                                                                 value={this.state.dateHastaCadete}
                                                             />
                                                         }
+                                                        <TimePicker placeholder={'ingresa Hora'} style={{marginTop:5,}} defaultValue={moment('12:08', 'HH:mm')} format={'HH:mm'} />
+
                                                     </div>
                                                 </div>    
                                             </div>

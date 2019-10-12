@@ -8,7 +8,7 @@ import Lottie             from 'react-lottie';
 import Autosuggest        from 'react-autosuggest';
 import api                from '../config/apiserver.js'
 import loadingGif           from '../styles/img/loading.gif'
-import {Pagination} from 'antd';
+import {Pagination, Select} from 'antd';
 
 moment.locale('es');
 
