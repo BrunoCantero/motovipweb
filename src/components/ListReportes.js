@@ -37,7 +37,11 @@ class ListReportes extends Component{
             dateDesdeCliente : new Date,
             dateHastaCliente : new Date,
             clienteIdSelected:0,
-            totalGananciaCadete:0
+            totalGananciaCadete:0,
+            totalGastoCliente:0,
+            horaCadeteDesde:'',
+            horaCadeteHasta:''
+
         }
     }
 
@@ -114,9 +118,18 @@ class ListReportes extends Component{
             cadeteIdSelected:cadete_id
         })
     }
-    
+    setHoraReporteCadeteDesde = time => {
+
+        this.setState({ horaCadeteDesde: time.format('HH:mm') })
+      // alert(time.format('HH:MM'));
+      };
+    setHoraReporteCadeteHasta = time => {
+        this.setState({ horaCadeteHasta: time.format('HH:mm') })
+      };
+            
     buscarReporteCadetes(){
-        this.setState({
+      //  alert(this.state.horaCadeteDesde +''+ this.state.horaCadeteHasta);
+         this.setState({
             showLoadingGif:true
         })
         if(this.state.cadeteIdSelected === 0){
@@ -139,7 +152,8 @@ class ListReportes extends Component{
         }else{
             
             //alert(this.state.cadeteIdSelected+" "+this.state.fechaSeleccionadaHastaCadete+" "+this.state.fechaSeleccionadaDesdeCadete);
-            let url_api = api.server+'reportes/cadetes/'+this.state.cadeteIdSelected+'/'+this.state.fechaSeleccionadaDesdeCadete+'/'+this.state.fechaSeleccionadaHastaCadete;
+            let url_api = api.server+'reportes/cadetes/'+this.state.cadeteIdSelected+'/'+this.state.fechaSeleccionadaDesdeCadete+' '+this.state.horaCadeteDesde+ '/'+this.state.fechaSeleccionadaHastaCadete+' '+this.state.horaCadeteHasta;
+            console.log(url_api); 
             fetch(url_api,{
                 method:'GET',
                 headers:{
@@ -164,7 +178,7 @@ class ListReportes extends Component{
                 })
                 console.log(error.length);
             })
-        }
+        } 
     }
 
 
@@ -179,13 +193,13 @@ class ListReportes extends Component{
         })
     }
 
-    calcularGananciaCadeteCliente(){
+    calcularGastoCliente(){
         let total=0;
         for(let i=0;i<this.state.listadoReporteCliente.length;i++){
-            total += this.state.listadoReporteCliente[i].order_fee_cadet;
+            total += this.state.listadoReporteCliente[i].amount;
         }
         this.setState({
-            totalGananciaCadete:total
+            totalGastoCliente:total
         })
     }
 
@@ -264,7 +278,7 @@ class ListReportes extends Component{
                     showListadoReporteCliente:true
                 })
                 //console.log(data.length);
-                this.calcularGananciaCadeteCliente();
+                this.calcularGastoCliente();
             })
             .catch((error)=>{
                 this.setState({
@@ -303,7 +317,7 @@ class ListReportes extends Component{
                                                             />
                                                             
                                                         }
-                                                        <TimePicker placeholder={'ingresa Hora'} style={{marginTop:5,}} defaultValue={''} format={'HH:mm'} />
+                                                        <TimePicker  onChange={this.setHoraReporteCadeteDesde} placeholder={'ingresa Hora'} style={{marginTop:5,}} defaultValue={''} format={'HH:mm'} />
                                                     </div>
                                                 </div>    
                                             </div>
@@ -320,7 +334,7 @@ class ListReportes extends Component{
                                                                 value={this.state.dateHastaCadete}
                                                             />
                                                         }
-                                                        <TimePicker placeholder={'ingresa Hora'} style={{marginTop:5,}} defaultValue={moment('12:08', 'HH:mm')} format={'HH:mm'} />
+                                                        <TimePicker onChange={this.setHoraReporteCadeteHasta} placeholder={'ingresa Hora'} style={{marginTop:5,}} defaultValue={moment('12:08', 'HH:mm')} format={'HH:mm'} />
 
                                                     </div>
                                                 </div>    
@@ -467,13 +481,13 @@ class ListReportes extends Component{
                                             <div className="col-md-12">
                                                 <div className="row">
                                                 <div className="col-md-4">
-                                                    <h4>Ganancia cadete </h4>
+                                                    <h4>Gasto Cliente </h4>
                                                 </div>
                                                 <div className="col-md-4">
                                                     <h4></h4>
                                                 </div>
                                                 <div className="col-md-4">
-                                                    <h4 style={{color:'green'}}> TOTAL: ${this.state.totalGananciaCadete} </h4>
+                                                    <h4 style={{color:'green'}}> TOTAL: ${this.state.totalGastoCliente} </h4>
                                                 </div>   
                                                 </div> 
                                                 <div class="card strpied-tabled-with-hover">
