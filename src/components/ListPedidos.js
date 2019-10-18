@@ -8,7 +8,7 @@ import Lottie             from 'react-lottie';
 import Autosuggest        from 'react-autosuggest';
 import api                from '../config/apiserver.js'
 import loadingGif           from '../styles/img/loading.gif'
-import {Pagination, Select} from 'antd';
+import {Pagination, Select,AutoComplete} from 'antd';
 
 moment.locale('es');
 
@@ -55,6 +55,7 @@ class ListPedidos extends Component{
         this.timeChangeInicio = this.timeChangeInicio.bind(this);
         this.timeChangeLlegada = this.timeChangeLlegada.bind(this);
         this.timeChangeFin = this.timeChangeFin.bind(this);
+        this.onClienteSelecte  = this.onClienteSelecte.bind(this);
         this.hiddenModalEditarPedido = this.hiddenModalEditarPedido.bind(this);
         const apitoken = sessionStorage['apitoken'];
         const iduser   = sessionStorage['iduser'];
@@ -495,6 +496,8 @@ class ListPedidos extends Component{
         .catch((error)=>{
             console.log(error);
         })
+
+        //console.log(this.state.listadoClientes);
     }
 
     getCategoriasPedidos(){
@@ -518,32 +521,9 @@ class ListPedidos extends Component{
 
     //seccion autocompletable cliente
 
-    onChange = (event, { newValue }) => {
-        //console.log(newValue);
-        let datos_cliente  = newValue.split(",");
-        this.setState({
-          value: datos_cliente[0],
-          clienteName:datos_cliente[0],
-          clientePedidoId:datos_cliente[1],
-          addressPedido: datos_cliente[2]
-        });
-      };
     
-    onSuggestionsFetchRequested = ({ value }) => {
-        this.setState({
-          suggestions: getSuggestions(value)
-        });
-    };
     
-    // Autosuggest will call this function every time you need to clear suggestions.
-    onSuggestionsClearRequested = () => {
-        this.setState({
-          suggestions: []
-        });
-    };
-
-    //fin seccion autocompletable cliente
-   
+    
 
     saveHoraRecepcion(idpedido,hora){
         //alert(this.state.apiToken)
@@ -635,6 +615,38 @@ class ListPedidos extends Component{
         
     }
 
+    onClienteSelecte(idcliente) {
+
+        var cliente = this.state.listadoClientes.filter(function(clientes){
+            return clientes.id == idcliente;
+        })
+        console.log(cliente);
+        this.completarDatosCliente(cliente[0].id,cliente[0].name,cliente[0].adress);
+        
+    }
+
+    completarDatosCliente(id,name,addres){
+        //alert(id+" "+name+""+addres)
+        this.setState({
+            clienteName:name,
+            clientePedidoId:id,
+            addressPedido: addres
+        });
+    }
+      
+    onBlur() {
+        console.log('blur');
+    }
+      
+    onFocus() {
+        console.log('focus');
+    }
+      
+    onSearch(val) {
+        console.log('search:', val);
+    }
+    
+
     componentDidMount(){
         this.getCadetes();
         this.getPedidos();
@@ -646,6 +658,8 @@ class ListPedidos extends Component{
 
  
     render(){
+        const { Option } = Select;
+
         const defaultLoading = {
             loop: true,
             autoplay: true,
@@ -664,14 +678,9 @@ class ListPedidos extends Component{
             },
         }
 
-        const { value, suggestions } = this.state;
+        
 
-        // Autosuggest will pass through all these props to the input.
-        const inputProps = {
-            placeholder: 'Buscar cliente...',
-            value,
-            onChange: this.onChange
-        };
+        
 
         return(
            <div className="content">
@@ -823,15 +832,23 @@ class ListPedidos extends Component{
                                         <div className="col-md-6 pr-1">
                                             <div class="form-group">
                                                 <label>Cliente</label>
-                                                <Autosuggest
-                                                    class="form-control"
-                                                    suggestions={this.state.listadoClientes}
-                                                    onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-                                                    onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-                                                    getSuggestionValue={getSuggestionValue}
-                                                    renderSuggestion={renderSuggestion}
-                                                    inputProps={inputProps}
-                                                />
+                                                <Select
+                                                    showSearch
+                                                    dropdownMenuStyle={{height:40}}
+                                                    placeholder="Buscar cliente"
+                                                    optionFilterProp="children"
+                                                    onChange={this.onClienteSelecte}
+                                                    onFocus={this.onFocus}
+                                                    onBlur={this.onBlur}
+                                                    onSearch={this.onSearch}
+                                                    filterOption={(input, option) =>
+                                                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                    }
+                                                >
+                                                    {this.state.listadoClientes.map((cliente,item)=>
+                                                        <option key={item+1} value={cliente.id}>{cliente.name}</option>
+                                                    )}
+                                                </Select>
                                             </div>
                                         </div>
                                         <div class="col-md-6 pl-1">
