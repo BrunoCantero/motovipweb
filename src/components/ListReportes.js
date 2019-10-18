@@ -119,12 +119,12 @@ class ListReportes extends Component{
         })
     }
     setHoraReporteCadeteDesde = time => {
-
-        this.setState({ horaCadeteDesde: time.format('HH:mm') })
-      // alert(time.format('HH:MM'));
-      };
+        if(time === null) this.setState({ horaCadeteDesde: '' })
+        else this.setState({horaCadeteDesde: time.format('HH:mm')})    
+ }
     setHoraReporteCadeteHasta = time => {
-        this.setState({ horaCadeteHasta: time.format('HH:mm') })
+        if(time === null) this.setState({ horaCadeteHasta: '' })
+        else this.setState({horaCadeteHasta: time.format('HH:mm')}) 
       };
             
     buscarReporteCadetes(){
@@ -334,7 +334,7 @@ class ListReportes extends Component{
                                                                 value={this.state.dateHastaCadete}
                                                             />
                                                         }
-                                                        <TimePicker onChange={this.setHoraReporteCadeteHasta} placeholder={'ingresa Hora'} style={{marginTop:5,}} defaultValue={moment('12:08', 'HH:mm')} format={'HH:mm'} />
+                                                        <TimePicker onChange={this.setHoraReporteCadeteHasta} placeholder={'ingresa Hora'} style={{marginTop:5,}} defaultValue={''} format={'HH:mm'} />
 
                                                     </div>
                                                 </div>    
