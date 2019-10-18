@@ -1,5 +1,5 @@
 const api ={
-    server:'https://2600a9fc.ngrok.io/',
+    server:'http://192.34.60.29/',
     version: '0.0.1',
 }
 
