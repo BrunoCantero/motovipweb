@@ -340,6 +340,7 @@ class ListClientes extends Component{
                                             </thead>
                                             <tbody>
                                                 {this.state.listadoClientes.map((clientes,item)=>
+                                                    clientes.id !== 1 &&
                                                     <tr key={item+1}>
                                                         <td>{item+1}</td>
                                                         <td><strong>{clientes.name.toUpperCase()}</strong></td>

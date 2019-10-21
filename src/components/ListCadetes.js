@@ -367,6 +367,7 @@ class ListCadetes extends Component{
                                             </thead>
                                             <tbody>
                                                 {this.state.listadoCadetes.map((cadetes,item)=>
+                                                    cadetes.id !==1 &&
                                                     <tr key={item+1}>
                                                         <td>{item+1}</td>
                                                         <td><strong>{cadetes.name.toUpperCase()}</strong></td>

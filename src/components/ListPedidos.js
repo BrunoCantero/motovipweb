@@ -97,9 +97,9 @@ class ListPedidos extends Component{
             orderTitle: 'Retiro pedido',
             orderDescription:'',
             usuarioId:iduser,
-            cadeteId:0,
-            categoriaPedidoId:0,
-            clientePedidoId:0,
+            cadeteId:1,
+            categoriaPedidoId:1,
+            clientePedidoId:1,
             value: '',
             suggestions: [],
             activePage: 1,
@@ -468,8 +468,7 @@ class ListPedidos extends Component{
         })
         .catch((error)=>{
             console.log(error);
-        })
-
+        });
     }
     
     getClientes(){
@@ -851,6 +850,7 @@ class ListPedidos extends Component{
                                                     dropdownMenuStyle={{height:40}}
                                                     placeholder="Buscar cliente"
                                                     optionFilterProp="children"
+                                                    defaultValue={1}
                                                     onChange={this.onClienteSelecte}
                                                     onFocus={this.onFocus}
                                                     onBlur={this.onBlur}
@@ -996,7 +996,24 @@ class ListPedidos extends Component{
                                         <div className="col-md-4 pr-1">
                                             <div class="form-group">
                                                 <label style={{fontWeight:'bold',color:'gray'}}>Cliente</label>
-                                                <input type="text" name="clienteName"  class="form-control" placeholder="Nombre cliente" onChange={this.handleChange.bind(this)} value={this.state.clienteName}/>
+                                                <Select
+                                                    showSearch
+                                                    dropdownMenuStyle={{height:40}}
+                                                    placeholder="Buscar cliente"
+                                                    optionFilterProp="children"
+                                                    defaultValue={this.state.clientePedidoId}
+                                                    onChange={this.onClienteSelecte}
+                                                    onFocus={this.onFocus}
+                                                    onBlur={this.onBlur}
+                                                    onSearch={this.onSearch}
+                                                    filterOption={(input, option) =>
+                                                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                    }
+                                                >
+                                                    {this.state.listadoClientes.map((cliente,item)=>
+                                                        <option key={item+1} value={cliente.id}>{cliente.name}</option>
+                                                    )}
+                                                </Select>
                                             </div>
                                         </div>
                                         <div class="col-md-4 pl-1">
