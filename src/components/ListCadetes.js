@@ -22,6 +22,7 @@ class ListCadetes extends Component{
             descriptionDeleteCadete :true,
             apiToken :apitoken,
             idCadete  : '',
+            statusCadete: 0,
             nameCadete : '',
             addressCadete : '',
             phoneNumberCadete : '',
@@ -35,7 +36,8 @@ class ListCadetes extends Component{
     }
 
 
-    verDetalleCadete(idcadete,name,adress,phone,description,patente,dni){
+    verDetalleCadete(idcadete,name,adress,phone,description,patente,dni,status){
+        //alert(status);
         this.setState({
             showModalCadete:true,
             showFormUpdateCadete:true,
@@ -46,7 +48,8 @@ class ListCadetes extends Component{
             phoneNumberCadete:phone,
             descriptionCadete:description,
             patenteCadete:patente,
-            dniCadete:dni
+            dniCadete:dni,
+            statusCadete:status
         })
     }
 
@@ -155,10 +158,11 @@ class ListCadetes extends Component{
                     name           : this.state.nameCadete,
                     profile        : "user.jpg",
                     dni            : this.state.dniCadete,
-                        vehicle_patent : this.state.patenteCadete,
-                        adress         : this.state.addressCadete,
-                        phone_number   : this.state.phoneNumberCadete,
-                        description    : this.state.descriptionCadete
+                    status         : 1,
+                    vehicle_patent : this.state.patenteCadete,
+                    adress         : this.state.addressCadete,
+                    phone_number   : this.state.phoneNumberCadete,
+                    description    : this.state.descriptionCadete
                     })
                 })
                 .then((response)=>response.json())
@@ -181,6 +185,7 @@ class ListCadetes extends Component{
 
 
     updateCadete(){  
+        
         if(this.state.nameCadete === ''){
             alert("DEBES COMPLETAR EL NOMBRE DEL CADETE");
         }else{
@@ -199,6 +204,7 @@ class ListCadetes extends Component{
                     name           : this.state.nameCadete,
                     profile        : "user.jpg",
                     dni            : this.state.dniCadete,
+                    status         : parseInt(this.state.statusCadete),
                     vehicle_patent : this.state.patenteCadete,
                     adress         : this.state.addressCadete,
                     phone_number   : this.state.phoneNumberCadete,
@@ -253,6 +259,14 @@ class ListCadetes extends Component{
 
         this.setState({
             listadoCadetes:newData
+        })
+    }
+
+    cambiarEstadoCadete(event){
+        let estado = event.target.value;
+
+        this.setState({
+            statusCadete:estado
         })
     }
 
@@ -344,6 +358,7 @@ class ListCadetes extends Component{
                                                 <tr>
                                                     <th>#</th>
                                                     <th>Cadete</th>
+                                                    <th>Estado</th>
                                                     <th>Patente</th>
                                                     <th>Direccion</th>
                                                     <th>Telefono</th>
@@ -355,10 +370,17 @@ class ListCadetes extends Component{
                                                     <tr key={item+1}>
                                                         <td>{item+1}</td>
                                                         <td><strong>{cadetes.name.toUpperCase()}</strong></td>
+                                                        <td>{
+                                                            cadetes.status === 0 ?
+                                                                <strong style={{color:'red'}}>No disponible</strong> 
+                                                            :
+                                                                <strong style={{color:'green'}}>Disponible</strong> 
+                                                            }
+                                                        </td>
                                                         <td>{cadetes.vehicle_patent}</td>
                                                         <td>{cadetes.adress}</td>
                                                         <td>{cadetes.phone_number}</td>
-                                                        <td><center><Button bsStyle="primary" onClick={()=>this.verDetalleCadete(cadetes.id,cadetes.name,cadetes.adress,cadetes.phone_number,cadetes.description,cadetes.vehicle_patent,cadetes.dni)}> VER</Button></center></td>
+                                                        <td><center><Button bsStyle="primary" onClick={()=>this.verDetalleCadete(cadetes.id,cadetes.name,cadetes.adress,cadetes.phone_number,cadetes.description,cadetes.vehicle_patent,cadetes.dni,cadetes.status)}> VER</Button></center></td>
                                                     </tr>
                                                 )}
                                             </tbody>        
@@ -417,11 +439,20 @@ class ListCadetes extends Component{
                                                     <label>Direccion</label>
                                                     <input type="text" name="addressCadete" class="form-control" placeholder="Direccion.." onChange={this.handleChange.bind(this)} value={this.state.addressCadete}/>
                                                 </div>
+                                                
                                             </div>
                                             <div class="col-md-6 pl-1">
                                                 <div class="form-group">
                                                     <label>Telefono</label>
                                                     <input type="text" name="phoneNumberCadete" class="form-control" placeholder="Telefono.." onChange={this.handleChange.bind(this)} value={this.state.phoneNumberCadete}/>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label>Estado</label>
+                                                    <select className="form-control" onChange={this.cambiarEstadoCadete.bind(this)} value={this.state.statusCadete}>
+                                                        <option value="">Elegir</option>
+                                                        <option value="0">No disponible</option>
+                                                        <option value="1">Disponible</option>
+                                                    </select>
                                                 </div>
                                             </div>
                                         </div>
