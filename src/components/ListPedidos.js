@@ -123,6 +123,7 @@ class ListPedidos extends Component{
             showLoadingPedido:false,
             addressPedido:'',
             amountPedido:'',
+            orderFeeMotovip:0,
             orderFeeCadete:0,
             orderDescription:'',
             lugarEntregaPedido:'',
@@ -186,6 +187,7 @@ class ListPedidos extends Component{
     getPedidos(){
         this.setState({
             loading:true,
+            listadoPedidos:[]
         })
         fetch(api.server+'pedidos',{
             method:'GET',
@@ -196,7 +198,7 @@ class ListPedidos extends Component{
         })
         .then((response)=>response.json())
         .then((responseJson)=>{
-            //console.
+            console.log(responseJson)
             this.setState({
                 listadoPedidos:responseJson.data,
                 loading:false
@@ -370,7 +372,7 @@ class ListPedidos extends Component{
     }
 
     editarPedidoDetalle(idpedido,idcadete,idcliente,cliete_name,direccion,start_pedido,arrival_time,end_time,comision_empresa,comision_motomandado,order_title,order_description,fecha_order,total_compra,categoria_pedido_id,lugar_retiro,lugar_entrega){
-        alert(arrival_time+" "+end_time);
+       
         this.setState({
             showModalEditarPedido:true,
             showFormEditarPedido:true,
@@ -620,7 +622,8 @@ class ListPedidos extends Component{
     handlePageChange(pageNumber){
         
         this.setState({
-            loading:true
+            loading:true,
+            listadoPedidos:[]
         })
         fetch(api.server+'pedidos?page='+pageNumber,{
             method:'GET',
@@ -631,7 +634,7 @@ class ListPedidos extends Component{
         })
         .then((response)=>response.json())
         .then((responseJson)=>{
-           console.log(responseJson)
+           //console.log(responseJson)
             this.setState({
                 listadoPedidos    :responseJson.data,
                 itemsCountPerPage :responseJson.per_page,
@@ -756,7 +759,7 @@ class ListPedidos extends Component{
                                                 <tr key={item+1}>
                                                     <td><strong>{pedidos.cliente_name}</strong></td>
                                                     <td>{pedidos.adress.toLowerCase()}</td>
-                                                    <td>{pedidos.order_title.toLowerCase()}</td>
+                                                    <td>{pedidos.categorias_pedidos.categoria_pedido}</td>
                                                     <td id="estado">{
                                                             pedidos.start_time  !== '' && pedidos.arrival_time === '' && pedidos.end_time === ''?
                                                             <strong style={{color:'red'}}>En espera</strong>
