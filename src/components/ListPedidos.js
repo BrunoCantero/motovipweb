@@ -7,8 +7,9 @@ import TimeKeeper         from 'react-timekeeper';
 import Lottie             from 'react-lottie';
 import Autosuggest        from 'react-autosuggest';
 import api                from '../config/apiserver.js'
-import loadingGif           from '../styles/img/loading.gif'
-import {Pagination, Select,AutoComplete} from 'antd';
+import loadingGif         from '../styles/img/loading.gif'
+import Pagination         from "react-js-pagination";
+import {Select} from 'antd';
 
 moment.locale('es');
 
@@ -57,6 +58,7 @@ class ListPedidos extends Component{
         this.timeChangeFin = this.timeChangeFin.bind(this);
         this.onClienteSelecte  = this.onClienteSelecte.bind(this);
         this.hiddenModalEditarPedido = this.hiddenModalEditarPedido.bind(this);
+        this.handlePageChange    = this.handlePageChange.bind(this);
         const apitoken = sessionStorage['apitoken'];
         const iduser   = sessionStorage['iduser'];
         this.state={
@@ -99,7 +101,11 @@ class ListPedidos extends Component{
             categoriaPedidoId:0,
             clientePedidoId:0,
             value: '',
-            suggestions: []
+            suggestions: [],
+            activePage: 1,
+            itemsCountPerPage:1,
+            totalItemsCount:1,
+            pageRangeDisplayed:20
         }
     }
 
@@ -132,7 +138,7 @@ class ListPedidos extends Component{
     }
 
     getCadetes(){
-        fetch(api.server+'cadetes',{
+        fetch(api.server+'cadetes/disponibles',{
             method:'GET',
             headers:{
                 'Content-type':'application/json',
@@ -190,8 +196,9 @@ class ListPedidos extends Component{
         })
         .then((response)=>response.json())
         .then((responseJson)=>{
+            //console.
             this.setState({
-                listadoPedidos:responseJson,
+                listadoPedidos:responseJson.data,
                 loading:false
             })
         })
@@ -221,6 +228,7 @@ class ListPedidos extends Component{
 
 
     timeChangeInicio(newTime){
+        alert(newTime);
         this.setState({
            timeEntregaInicio : newTime.formatted24 
         }) 
@@ -362,6 +370,7 @@ class ListPedidos extends Component{
     }
 
     editarPedidoDetalle(idpedido,idcadete,idcliente,cliete_name,direccion,start_pedido,arrival_time,end_time,comision_empresa,comision_motomandado,order_title,order_description,fecha_order,total_compra,categoria_pedido_id,lugar_retiro,lugar_entrega){
+        alert(arrival_time+" "+end_time);
         this.setState({
             showModalEditarPedido:true,
             showFormEditarPedido:true,
@@ -412,23 +421,6 @@ class ListPedidos extends Component{
     }
 
     updatePedido(){
-        /*console.log('cliente_name '+this.state.clienteName+
-        'fecha_order: '+this.state.fechaOrder+
-        'start_time: '+this.state.timeEntregaInicio+
-        'arrival_time : '+this.state.timeLlegadaPedido+
-        'end_time: '+this.state.timeFinPedido+
-        'adress :'+this.state.addressPedido+
-        'amount :'+this.state.amountPedido+
-        'order_fee_mv :'+this.state.orderFeeMotovip+
-        'order_fee_cadet '+this.state.orderFeeCadete+
-        'order_title :'+this.state.orderTitle+
-        'order_description: '+this.state.orderDescription+
-        'lugar_retiro :'+this.state.lugarRetiroPedido,
-        'lugar_entrega :'+ this.state.lugarEntregaPedido+
-        'user_id '+this.state.usuarioId+
-        'cadete_id '+this.state.cadeteId+
-        'cliente_id '+this.state.clientePedidoId+
-        'categoria_pedido_id'+this.state.categoriaPedidoId)*/
         this.setState({
             showFormEditarPedido:false,
             showLoadingEditarPedido:true
@@ -576,7 +568,7 @@ class ListPedidos extends Component{
     }
 
     endHoraPedido(idTable,idpedido){
-        let hora_fin = moment().format('HH:mm:ss');
+        let hora_fin = moment().format('HH:mm');
         this.finHoraRecepcion(idpedido,hora_fin);
         this.setState({
             showLoadingGif:true
@@ -597,7 +589,7 @@ class ListPedidos extends Component{
     }
 
     initHoraPedido(idTable,idpedido){
-        let hora_init = moment().format('HH:mm:ss');
+        let hora_init = moment().format('HH:mm');
         this.saveHoraRecepcion(idpedido,hora_init);
         this.setState({
             showLoadingGif:true
@@ -623,6 +615,37 @@ class ListPedidos extends Component{
         console.log(cliente);
         this.completarDatosCliente(cliente[0].id,cliente[0].name,cliente[0].adress);
         
+    }
+
+    handlePageChange(pageNumber){
+        
+        this.setState({
+            loading:true
+        })
+        fetch(api.server+'pedidos?page='+pageNumber,{
+            method:'GET',
+            headers:{
+                'Content-type':'application/json',
+                'api_token': this.state.apiToken
+            }
+        })
+        .then((response)=>response.json())
+        .then((responseJson)=>{
+           console.log(responseJson)
+            this.setState({
+                listadoPedidos    :responseJson.data,
+                itemsCountPerPage :responseJson.per_page,
+                totalItemsCount   :responseJson.total,
+                activePage        :responseJson.current_page,
+                loading           :false
+            })
+        })
+        .catch((error)=>{
+            this.setState({
+                loading:false,
+            })
+            console.log(error);
+        })
     }
 
     completarDatosCliente(id,name,addres){
@@ -688,30 +711,11 @@ class ListPedidos extends Component{
                     <div className="row">
                         <div className="col-md-4">
                             <div class="form-group" style={{marginBottom:10}}>
-                                <input type="text" class="form-control" name="fecha" onClick={()=>this.mostrarCalendario()} value={this.state.fechaSeleccionada} placeholder="Fecha.." style={{width:180}} />
-                                {this.state.showFecha &&
-                                    <Calendar
-                                        onChange={this.onChangeFechaSeleccionada.bind(this)}
-                                        value={this.state.date}
-                                    />
-                                } 
+                                <Button variant="btn btn-info"  onClick={()=>this.modalNuevoPedido()}> Nuevo pedido</Button> 
                             </div>   
                         </div>
-                        <div className="col-md-2">
-                            <div class="form-group">
-                                <input type="text" class="form-control" name="fecha"   placeholder="Clientes.." style={{width:160}} />
-                            </div>
-                        </div>
-                        <div className="col-md-2">
-                            <div className="form-group">
-                                <select class="form-control" name="fecha" style={{width:160,marginLeft:10}}>
-                                    <option>Elegir</option>
-                                </select>
-                                
-                            </div>
-                        </div> 
                         <div className="col-md-3">
-                        <Button variant="btn btn-info" style={{float:'right'}} onClick={()=>this.modalNuevoPedido()}> Nuevo pedido</Button>
+                            
                         </div>   
                         <div className="col-md-12">
                             <div class="card strpied-tabled-with-hover">
@@ -801,10 +805,17 @@ class ListPedidos extends Component{
                                             )}
                                         </tbody>        
                                     </table>
-                                    <Pagination showSizeChanger
-                                    defaultCurrent={3}
-                                    total={500} style={{alignContent:'center',justifyContent:'center', display:'inline-block',
-                                    marginLeft: 350,}} />
+                                    <div className="d-flex justify-content-center">
+                                        <Pagination
+                                            activePage={this.state.activePage}
+                                            itemsCountPerPage={this.state.itemsCountPerPage}
+                                            totalItemsCount={this.state.totalItemsCount}
+                                            pageRangeDisplayed={this.state.pageRangeDisplayed}
+                                            onChange={this.handlePageChange}
+                                            itemClass= 'page-item'
+                                            linkClass = 'page-link'
+                                        />
+                                    </div>
                                 </div>
                             </div>
                         </div>

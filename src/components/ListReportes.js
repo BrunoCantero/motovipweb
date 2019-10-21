@@ -121,7 +121,8 @@ class ListReportes extends Component{
     setHoraReporteCadeteDesde = time => {
         if(time === null) this.setState({ horaCadeteDesde: '' })
         else this.setState({horaCadeteDesde: time.format('HH:mm')})    
- }
+    }
+    
     setHoraReporteCadeteHasta = time => {
         if(time === null) this.setState({ horaCadeteHasta: '' })
         else this.setState({horaCadeteHasta: time.format('HH:mm')}) 
