@@ -291,6 +291,15 @@ class ListReportes extends Component{
         }
     }
 
+    imprimirListado(divID){
+        var divToPrint = document.getElementById(divID);
+           var popupWin = window.open('', '_blank', 'width=900,height=900');
+           popupWin.document.open();
+           popupWin.document.write('<html><body onload="window.print()"><table>' + divToPrint.innerHTML + '</table></body></html>');
+           popupWin.document.close();
+    }
+
+
     componentDidMount(){
         this.getCadetes();
         this.getClientes();
@@ -370,20 +379,21 @@ class ListReportes extends Component{
                                         }
                                         {
                                         this.state.showListadoReporteCadete &&
-                                            <div className="col-md-12">
+                                        <div id="reporte" className="col-md-12">
+                                            <div  id="printablediv">
                                                 <div className="row">
-                                                <div className="col-md-4">
-                                                    <h4>Ganancia cadete </h4>
-                                                </div>
-                                                <div className="col-md-4">
-                                                    <h4></h4>
-                                                </div>
-                                                <div className="col-md-4">
-                                                    <h4 style={{color:'green'}}> TOTAL: ${this.state.totalGananciaCadete} </h4>
-                                                </div>   
+                                                    <div className="col-md-4">
+                                                        <h4>Ganancia cadete </h4>
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <h4></h4>
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <h4 style={{color:'green'}}> TOTAL: ${this.state.totalGananciaCadete} </h4>
+                                                    </div>   
                                                 </div> 
                                                 <div class="card strpied-tabled-with-hover">
-                                                    <div class="card-body table-full-width table-responsive" id="printablediv">
+                                                    <div class="card-body table-full-width table-responsive">
                                                         <table  className="table table-hover table-striped" >
                                                             <thead>
                                                                 <tr>
@@ -410,9 +420,12 @@ class ListReportes extends Component{
                                                               )}       
                                                             </tbody>        
                                                         </table>
+                                                        
                                                     </div>
                                                 </div>
                                             </div>
+                                            <center><Button variant="btn btn-default"  onClick={()=>this.imprimirListado('printablediv')}> IMPRIMIR</Button></center>
+                                        </div>    
                                         }
                                     </div>
                                 </Tab>
@@ -479,17 +492,18 @@ class ListReportes extends Component{
                                         }
                                         {
                                         this.state.showListadoReporteCliente &&
-                                            <div className="col-md-12">
+                                        <div id="cliente" className="col-md-12">
+                                            <div  id="printabledivcliente">
                                                 <div className="row">
-                                                <div className="col-md-4">
-                                                    <h4>Gasto Cliente </h4>
-                                                </div>
-                                                <div className="col-md-4">
-                                                    <h4></h4>
-                                                </div>
-                                                <div className="col-md-4">
-                                                    <h4 style={{color:'green'}}> TOTAL: ${this.state.totalGastoCliente} </h4>
-                                                </div>   
+                                                    <div className="col-md-4">
+                                                        <h4>Gasto Cliente </h4>
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <h4></h4>
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <h4 style={{color:'green'}}> TOTAL: ${this.state.totalGastoCliente} </h4>
+                                                    </div>   
                                                 </div> 
                                                 <div class="card strpied-tabled-with-hover">
                                                     <div class="card-body table-full-width table-responsive" id="printablediv">
@@ -522,6 +536,8 @@ class ListReportes extends Component{
                                                     </div>
                                                 </div>
                                             </div>
+                                            <center><Button variant="btn btn-default"  onClick={()=>this.imprimirListado('printabledivcliente')}> IMPRIMIR</Button></center>
+                                        </div>                        
                                         }
                                     </div>  
                                 </Tab>
