@@ -18,6 +18,7 @@ class ListReportes extends Component{
             listadoCadetes:[],
             listadoClientes:[],
             listadoReporteCadete:[],
+            listadoReporteCadetePorGanacias:[],
             apiToken:apitoken,
             showFechaDesdeCadete:false,
             showFechaHastaCadete : false,
@@ -26,21 +27,30 @@ class ListReportes extends Component{
             showListadoReporteCadete:false,
             showLoadingGif:false,
             showLoadingClienteGif:false,
+            showLoadingPorGanacinasGif:false,
             dateDesdeCadete : new Date,
             dateHastaCadete : new Date,
             cadeteIdSelected:0,
             showFechaDesdeCliente:false,
             showFechaHastaCliente : false,
+            showFechaDesdeCadetePorGancias:false,
+            showFechaHastaCadetePorGanancias:false,
             fechaSeleccionadaDesdeCliente:'',
             fechaSeleccionadaHastaCliente:'',
+            fechaSeleccionadaDesdeCadetePorGanancias:'',
+            fechaSeleccionadaHastaCadetePorGanancias:'',
             showListadoReporteCliente:false,
             dateDesdeCliente : new Date,
             dateHastaCliente : new Date,
+            dateDesdeCadetePorGanancias : new Date,
+            dateHastaCadetePorGanancias : new Date,
             clienteIdSelected:0,
             totalGananciaCadete:0,
             totalGastoCliente:0,
             horaCadeteDesde:'',
-            horaCadeteHasta:''
+            horaCadeteHasta:'',
+            horaCadeteDesdePorGanancias:'',
+            horaCadeteHastaPorGanancias:''
 
         }
     }
@@ -112,6 +122,43 @@ class ListReportes extends Component{
         })
     }
 
+    mostrarFechaDesdeCadetePorGanancias(){
+        this.setState({
+            showFechaDesdeCadetePorGancias:!this.state.showFechaDesdeCadetePorGancias
+        })
+    }
+
+    mostrarFechaHastaCadetePorGanancias(){
+        this.setState({
+            showFechaHastaCadetePorGanancias :!this.state.showFechaHastaCadetePorGanancias
+        })
+    }
+
+    onChangeFechaSeleccionadaDesdeCadetePorGanancias (date){
+        var fecha_seleccionada = moment(date).format('YYYY-MM-DD');
+        this.setState({ 
+            fechaSeleccionadaDesdeCadetePorGanancias:fecha_seleccionada,
+            showFechaDesdeCadetePorGancias:false })
+    }
+
+    onChangeFechaSeleccionadaHastaCadetePorGanancias (date){
+        var fecha_seleccionada = moment(date).format('YYYY-MM-DD');
+        this.setState({ 
+            fechaSeleccionadaHastaCadetePorGanancias:fecha_seleccionada,
+            showFechaHastaCadetePorGanancias:false });
+    }
+
+    setHoraReporteCadeteDesdePorGanancias = time => {
+        if(time === null) this.setState({ horaCadeteDesdePorGanancias: '' })
+        else this.setState({horaCadeteDesdePorGanancias: time.format('HH:mm')})    
+    }
+    
+    setHoraReporteCadeteHastaPorGanancias = time => {
+        if(time === null) this.setState({ horaCadeteHastaPorGanancias: '' })
+        else this.setState({horaCadeteHastaPorGanancias: time.format('HH:mm')}) 
+    };
+
+
     seleccionCadete(event){
         let cadete_id =  event.target.value;
         this.setState({
@@ -126,7 +173,7 @@ class ListReportes extends Component{
     setHoraReporteCadeteHasta = time => {
         if(time === null) this.setState({ horaCadeteHasta: '' })
         else this.setState({horaCadeteHasta: time.format('HH:mm')}) 
-      };
+    };
             
     buscarReporteCadetes(){
       //  alert(this.state.horaCadeteDesde +''+ this.state.horaCadeteHasta);
@@ -182,8 +229,52 @@ class ListReportes extends Component{
         } 
     }
 
-    buscarReporteCadetes(){
-       
+    buscarReporteCadetesPorGanancias(){
+        //  alert(this.state.horaCadeteDesde +''+ this.state.horaCadeteHasta);
+           this.setState({
+              showLoadingPorGanacinasGif:true
+          })
+          
+          if(this.state.fechaSeleccionadaDesdeCadetePorGanancias === ''){
+              alert("Debes seleccionar una fecha desde");
+              this.setState({
+                  showLoadingPorGanacinasGif:false
+              })
+          }
+          else if(this.state.fechaSeleccionadaHastaCadetePorGanancias === ''){
+              alert("Debes seleccionar una fecha hasta");
+              this.setState({
+                  showLoadingPorGanacinasGif:false
+              })
+          }else{
+              
+              //alert(this.state.cadeteIdSelected+" "+this.state.fechaSeleccionadaHastaCadete+" "+this.state.fechaSeleccionadaDesdeCadete);
+              let url_api = api.server+'reportes/ganancias_cadetes/'+this.state.fechaSeleccionadaDesdeCadetePorGanancias+' '+this.state.horaCadeteDesdePorGanancias+ '/'+this.state.fechaSeleccionadaHastaCadetePorGanancias+' '+this.state.horaCadeteHastaPorGanancias;
+               //console.log(url_api); 
+              fetch(url_api,{
+                  method:'GET',
+                  headers:{
+                      "Content-Type":"application/json; charset=utf-8",
+                      "api_token":this.state.apiToken
+                  }
+              })
+              .then(response=>response.json())
+              .then(data=>{
+                    console.log(data);
+                    this.setState({
+                      listadoReporteCadetePorGanacias:data,
+                      showLoadingPorGanacinasGif:false,
+                      showListadoReporteCadetePorGanancias:true
+                    });
+              })
+              .catch((error)=>{
+                  this.setState({
+                      showLoadingPorGanacinasGif:false,
+                      showListadoReporteCadetePorGanancias:false
+                  })
+                  console.log(error.length);
+              })
+          } 
     }
 
 
@@ -551,15 +642,15 @@ class ListReportes extends Component{
                                                 <div class="col-md-11 pr-1">
                                                     <div class="form-group">
                                                         <label>Fecha desde</label>
-                                                        <input type="text" class="form-control" onClick={()=>this.mostrarFechaDesdeCadete()} name="fechaDesdeCadete" value={this.state.fechaSeleccionadaDesdeCadete} placeholder="fecha.."/>
-                                                        {this.state.showFechaDesdeCadete &&
+                                                        <input type="text" class="form-control" onClick={()=>this.mostrarFechaDesdeCadetePorGanancias()} name="fechaDesdeCadete" value={this.state.fechaSeleccionadaDesdeCadetePorGanancias} placeholder="fecha.."/>
+                                                        {this.state.showFechaDesdeCadetePorGancias &&
                                                             <Calendar
-                                                                onChange={this.onChangeFechaSeleccionadaDesdeCadete.bind(this)}
-                                                                value={this.state.dateDesdeCadete}
+                                                                onChange={this.onChangeFechaSeleccionadaDesdeCadetePorGanancias.bind(this)}
+                                                                value={this.state.dateDesdeCadetePorGanancias}
                                                             />
                                                             
                                                         }
-                                                        <TimePicker  onChange={this.setHoraReporteCadeteDesde} placeholder={'ingresa Hora'} style={{marginTop:5,}} defaultValue={''} format={'HH:mm'} />
+                                                        <TimePicker  onChange={this.setHoraReporteCadeteDesdePorGanancias} placeholder={'ingresa Hora'} style={{marginTop:5,}} defaultValue={''} format={'HH:mm'} />
                                                     </div>
                                                 </div>    
                                             </div>
@@ -569,14 +660,14 @@ class ListReportes extends Component{
                                                 <div class="col-md-11 pr-1">
                                                     <div class="form-group">
                                                         <label>Fecha hasta</label>
-                                                        <input type="text" class="form-control" onClick={()=>this.mostrarFechaHastaCadete()} name="fechaHastaCadete" value={this.state.fechaSeleccionadaHastaCadete} placeholder="fecha.."/>
-                                                        {this.state.showFechaHastaCadete &&
+                                                        <input type="text" class="form-control" onClick={()=>this.mostrarFechaHastaCadetePorGanancias()} name="fechaHastaCadetePorGanancias" value={this.state.fechaSeleccionadaHastaCadetePorGanancias} placeholder="fecha.."/>
+                                                        {this.state.showFechaHastaCadetePorGanancias &&
                                                             <Calendar
-                                                                onChange={this.onChangeFechaSeleccionadaHastaCadete.bind(this)}
-                                                                value={this.state.dateHastaCadete}
+                                                                onChange={this.onChangeFechaSeleccionadaHastaCadetePorGanancias.bind(this)}
+                                                                value={this.state.dateHastaCadetePorGanancias}
                                                             />
                                                         }
-                                                        <TimePicker onChange={this.setHoraReporteCadeteHasta} placeholder={'ingresa Hora'} style={{marginTop:5,}} defaultValue={''} format={'HH:mm'} />
+                                                        <TimePicker onChange={this.setHoraReporteCadeteHastaPorGanancias} placeholder={'ingresa Hora'} style={{marginTop:5,}} defaultValue={''} format={'HH:mm'} />
 
                                                     </div>
                                                 </div>    
@@ -585,52 +676,37 @@ class ListReportes extends Component{
                                         <div class="col-md-3">
                                             <div class="col-md-11 pr-1" style={{marginTop:20}}>
                                                 <div class="form-group">
-                                                    <Button variant="btn btn-info"  onClick={()=>this.buscarReporteCadetesGanancias()}> Buscar reporte</Button>
+                                                    <Button variant="btn btn-info"  onClick={()=>this.buscarReporteCadetesPorGanancias()}> Buscar reporte</Button>
                                                 </div>
                                             </div>    
                                         </div>
-                                        {this.state.showLoadingGif &&
+                                        {this.state.showLoadingPorGanacinasGif &&
                                             <div className="col-md-12">
                                                 <center><img src={loadingGif} style={{width:60,height:60}}/></center>
                                             </div>
                                         }
                                         {
-                                        this.state.showListadoReporteCadete &&
-                                        <div id="reporte" className="col-md-12">
-                                            <div  id="printablediv">
-                                                <div className="row">
-                                                    <div className="col-md-4">
-                                                        <h4>Ganancia cadete </h4>
-                                                    </div>
-                                                    <div className="col-md-4">
-                                                        <h4></h4>
-                                                    </div>
-                                                    <div className="col-md-4">
-                                                        <h4 style={{color:'green'}}> TOTAL: ${this.state.totalGananciaCadete} </h4>
-                                                    </div>   
-                                                </div> 
+                                        this.state.showListadoReporteCadetePorGanancias &&
+                                        <div id="reportePorGanancias" className="col-md-12">
+                                            <div  id="printabledivPorGanancias"> 
                                                 <div class="card strpied-tabled-with-hover">
                                                     <div class="card-body table-full-width table-responsive">
                                                         <table  className="table table-hover table-striped" >
                                                             <thead>
                                                                 <tr>
                                                                     <th>#</th>
-                                                                    <th>Cliente</th>
-                                                                    <th>Direccion</th>
+                                                                    <th>Cadete</th>
                                                                     <th>fecha</th>
-                                                                    <th><center>Total_pedido</center></th>
                                                                     <th><center>Comision cadete</center></th>
                                                                     <th><center>Comision motovip</center></th>
                                                                 </tr>
                                                             </thead>
                                                             <tbody>
-                                                             {this.state.listadoReporteCadete.map((pedido,item)=>
+                                                             {this.state.listadoReporteCadetePorGanacias.map((pedido,item)=>
                                                                 <tr key={item+1}>
-                                                                    <td>{pedido.id}</td>
-                                                                    <td><strong>{pedido.cliente_name}</strong></td>
-                                                                    <td>{pedido.adress}</td>
+                                                                    <td>{pedido.cadete_id}</td>
+                                                                    <td><strong>{pedido.cadete}</strong></td>
                                                                     <td>{pedido.fecha_order}</td>
-                                                                    <td><center><strong style={{color:'green'}}>${pedido.amount}</strong></center></td>
                                                                     <td><center><strong style={{color:'red'}}>${pedido.order_fee_cadet}</strong></center></td>
                                                                     <td><center><strong style={{color:'red'}}>${pedido.order_fee_mv}</strong></center></td>
                                                                 </tr>  
@@ -641,7 +717,7 @@ class ListReportes extends Component{
                                                     </div>
                                                 </div>
                                             </div>
-                                            <center><Button variant="btn btn-default"  onClick={()=>this.imprimirListado('printablediv')}> IMPRIMIR</Button></center>
+                                            <center><Button variant="btn btn-default"  onClick={()=>this.imprimirListado('printabledivPorGanancias')}> IMPRIMIR</Button></center>
                                         </div>    
                                         }
                                     </div>
