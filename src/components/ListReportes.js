@@ -154,7 +154,7 @@ class ListReportes extends Component{
             
             //alert(this.state.cadeteIdSelected+" "+this.state.fechaSeleccionadaHastaCadete+" "+this.state.fechaSeleccionadaDesdeCadete);
             let url_api = api.server+'reportes/cadetes/'+this.state.cadeteIdSelected+'/'+this.state.fechaSeleccionadaDesdeCadete+' '+this.state.horaCadeteDesde+ '/'+this.state.fechaSeleccionadaHastaCadete+' '+this.state.horaCadeteHasta;
-            console.log(url_api); 
+             //console.log(url_api); 
             fetch(url_api,{
                 method:'GET',
                 headers:{
@@ -182,6 +182,9 @@ class ListReportes extends Component{
         } 
     }
 
+    buscarReporteCadetes(){
+       
+    }
 
 
     calcularGananciaCadete(){
@@ -540,6 +543,108 @@ class ListReportes extends Component{
                                         </div>                        
                                         }
                                     </div>  
+                                </Tab>
+                                <Tab eventKey="Por ganancias" title="Por ganancias">
+                                    <div className="row" style={{marginTop:10}}>
+                                        <div class="col-md-3">
+                                            <div class="card">
+                                                <div class="col-md-11 pr-1">
+                                                    <div class="form-group">
+                                                        <label>Fecha desde</label>
+                                                        <input type="text" class="form-control" onClick={()=>this.mostrarFechaDesdeCadete()} name="fechaDesdeCadete" value={this.state.fechaSeleccionadaDesdeCadete} placeholder="fecha.."/>
+                                                        {this.state.showFechaDesdeCadete &&
+                                                            <Calendar
+                                                                onChange={this.onChangeFechaSeleccionadaDesdeCadete.bind(this)}
+                                                                value={this.state.dateDesdeCadete}
+                                                            />
+                                                            
+                                                        }
+                                                        <TimePicker  onChange={this.setHoraReporteCadeteDesde} placeholder={'ingresa Hora'} style={{marginTop:5,}} defaultValue={''} format={'HH:mm'} />
+                                                    </div>
+                                                </div>    
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="card">
+                                                <div class="col-md-11 pr-1">
+                                                    <div class="form-group">
+                                                        <label>Fecha hasta</label>
+                                                        <input type="text" class="form-control" onClick={()=>this.mostrarFechaHastaCadete()} name="fechaHastaCadete" value={this.state.fechaSeleccionadaHastaCadete} placeholder="fecha.."/>
+                                                        {this.state.showFechaHastaCadete &&
+                                                            <Calendar
+                                                                onChange={this.onChangeFechaSeleccionadaHastaCadete.bind(this)}
+                                                                value={this.state.dateHastaCadete}
+                                                            />
+                                                        }
+                                                        <TimePicker onChange={this.setHoraReporteCadeteHasta} placeholder={'ingresa Hora'} style={{marginTop:5,}} defaultValue={''} format={'HH:mm'} />
+
+                                                    </div>
+                                                </div>    
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="col-md-11 pr-1" style={{marginTop:20}}>
+                                                <div class="form-group">
+                                                    <Button variant="btn btn-info"  onClick={()=>this.buscarReporteCadetesGanancias()}> Buscar reporte</Button>
+                                                </div>
+                                            </div>    
+                                        </div>
+                                        {this.state.showLoadingGif &&
+                                            <div className="col-md-12">
+                                                <center><img src={loadingGif} style={{width:60,height:60}}/></center>
+                                            </div>
+                                        }
+                                        {
+                                        this.state.showListadoReporteCadete &&
+                                        <div id="reporte" className="col-md-12">
+                                            <div  id="printablediv">
+                                                <div className="row">
+                                                    <div className="col-md-4">
+                                                        <h4>Ganancia cadete </h4>
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <h4></h4>
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <h4 style={{color:'green'}}> TOTAL: ${this.state.totalGananciaCadete} </h4>
+                                                    </div>   
+                                                </div> 
+                                                <div class="card strpied-tabled-with-hover">
+                                                    <div class="card-body table-full-width table-responsive">
+                                                        <table  className="table table-hover table-striped" >
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>#</th>
+                                                                    <th>Cliente</th>
+                                                                    <th>Direccion</th>
+                                                                    <th>fecha</th>
+                                                                    <th><center>Total_pedido</center></th>
+                                                                    <th><center>Comision cadete</center></th>
+                                                                    <th><center>Comision motovip</center></th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                             {this.state.listadoReporteCadete.map((pedido,item)=>
+                                                                <tr key={item+1}>
+                                                                    <td>{pedido.id}</td>
+                                                                    <td><strong>{pedido.cliente_name}</strong></td>
+                                                                    <td>{pedido.adress}</td>
+                                                                    <td>{pedido.fecha_order}</td>
+                                                                    <td><center><strong style={{color:'green'}}>${pedido.amount}</strong></center></td>
+                                                                    <td><center><strong style={{color:'red'}}>${pedido.order_fee_cadet}</strong></center></td>
+                                                                    <td><center><strong style={{color:'red'}}>${pedido.order_fee_mv}</strong></center></td>
+                                                                </tr>  
+                                                              )}       
+                                                            </tbody>        
+                                                        </table>
+                                                        
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <center><Button variant="btn btn-default"  onClick={()=>this.imprimirListado('printablediv')}> IMPRIMIR</Button></center>
+                                        </div>    
+                                        }
+                                    </div>
                                 </Tab>
                             </Tabs>
                         </div>
