@@ -47,6 +47,9 @@ class ListReportes extends Component{
             clienteIdSelected:0,
             totalGananciaCadete:0,
             totalGastoCliente:0,
+            totalGananciaMotovip:0,
+            totalCadetes:0,
+            totales:0,
             horaCadeteDesde:'',
             horaCadeteHasta:'',
             horaCadeteDesdePorGanancias:'',
@@ -266,6 +269,7 @@ class ListReportes extends Component{
                       showLoadingPorGanacinasGif:false,
                       showListadoReporteCadetePorGanancias:true
                     });
+                    this.calcularGananciasTotales();
               })
               .catch((error)=>{
                   this.setState({
@@ -295,6 +299,22 @@ class ListReportes extends Component{
         }
         this.setState({
             totalGastoCliente:total
+        })
+    }
+
+     calcularGananciasTotales(){
+        let total=0;
+        let total_cad=0;
+        for(let i=0;i<this.state.listadoReporteCadetePorGanacias.length;i++){
+            total += this.state.listadoReporteCadetePorGanacias[i].total_mv;
+            total_cad += this.state.listadoReporteCadetePorGanacias[i].total_cadete;
+        }
+        this.setState({
+            totalGananciaMotovip:total,
+            totalCadetes:total_cad,
+        })
+       this.setState({
+            totales: this.state.totalGananciaMotovip + this.state.totalCadetes
         })
     }
 
@@ -637,6 +657,7 @@ class ListReportes extends Component{
                                 </Tab>
                                 <Tab eventKey="Por ganancias" title="Por ganancias">
                                     <div className="row" style={{marginTop:10}}>
+                                 
                                         <div class="col-md-3">
                                             <div class="card">
                                                 <div class="col-md-11 pr-1">
@@ -689,6 +710,39 @@ class ListReportes extends Component{
                                         this.state.showListadoReporteCadetePorGanancias &&
                                         <div id="reportePorGanancias" className="col-md-12">
                                             <div  id="printabledivPorGanancias"> 
+                                             <div className="row">
+                                                    <div className="col-md-4">
+                                                        <h4>Total Motovip</h4>
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <h4></h4>
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <h4 style={{color:'green'}}> TOTAL: ${this.state.totalGananciaMotovip} </h4>
+                                                    </div>   
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col-md-4">
+                                                        <h4>Total Cadetes</h4>
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <h4></h4>
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <h4 style={{color:'green'}}> TOTAL: ${this.state.totalCadetes} </h4>
+                                                    </div>   
+                                                </div>
+                                                <div className="row">
+                                                    <div className="col-md-4">
+                                                        <h4>Totales</h4>
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <h4></h4>
+                                                    </div>
+                                                    <div className="col-md-4">
+                                                        <h4 style={{color:'green'}}> TOTAL: ${this.state.totales} </h4>
+                                                    </div>   
+                                                </div>                                                            
                                                 <div class="card strpied-tabled-with-hover">
                                                     <div class="card-body table-full-width table-responsive">
                                                         <table  className="table table-hover table-striped" >
@@ -697,6 +751,7 @@ class ListReportes extends Component{
                                                                     <th>#</th>
                                                                     <th>Cadete</th>
                                                                     <th>fecha</th>
+                                                                    <th><center>Cantidad Pedidos</center></th>
                                                                     <th><center>Comision cadete</center></th>
                                                                     <th><center>Comision motovip</center></th>
                                                                 </tr>
@@ -707,8 +762,9 @@ class ListReportes extends Component{
                                                                     <td>{pedido.cadete_id}</td>
                                                                     <td><strong>{pedido.cadete}</strong></td>
                                                                     <td>{pedido.fecha_order}</td>
-                                                                    <td><center><strong style={{color:'red'}}>${pedido.order_fee_cadet}</strong></center></td>
-                                                                    <td><center><strong style={{color:'red'}}>${pedido.order_fee_mv}</strong></center></td>
+                                                                    <td><center>{pedido.cantidad_pedidos}</center></td>
+                                                                    <td><center><strong style={{color:'red'}}>${pedido.total_cadete}</strong></center></td>
+                                                                    <td><center><strong style={{color:'red'}}>${pedido.total_mv}</strong></center></td>
                                                                 </tr>  
                                                               )}       
                                                             </tbody>        
