@@ -200,7 +200,7 @@ class ListPedidos extends Component{
         .then((responseJson)=>{
             console.log(responseJson)
             this.setState({
-                listadoPedidos:responseJson.data,
+                listadoPedidos:responseJson,
                 loading:false
             })
         })
