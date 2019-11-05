@@ -200,7 +200,7 @@ class ListPedidos extends Component{
         .then((responseJson)=>{
             console.log(responseJson)
             this.setState({
-                listadoPedidos:responseJson,
+                listadoPedidos:responseJson.data,
                 loading:false
             })
         })
@@ -733,9 +733,10 @@ class ListPedidos extends Component{
                                     <table  className="table table-hover table-striped" id="pedidos">
                                         <thead>
                                             <tr>
+                                                <th>Id</th>
                                                 <th>Cliente</th>
                                                 <th>Direccion</th>
-                                                <th>Categoria</th>
+                                                <th>Cadete</th>
                                                 <th>Estado</th>
                                                 <th>Recepción</th>
                                                 <th>Inicio</th>
@@ -756,9 +757,10 @@ class ListPedidos extends Component{
                                             {
                                                 this.state.listadoPedidos.map((pedidos,item)=>
                                                 <tr key={item+1}>
+                                                    <td>{pedidos.id}</td>
                                                     <td><strong>{pedidos.cliente_name}</strong></td>
                                                     <td>{pedidos.adress.toLowerCase()}</td>
-                                                    <td>{pedidos.categorias_pedidos.categoria_pedido}</td>
+                                                    <td>{pedidos.cadete}</td>
                                                     <td id="estado">{
                                                             pedidos.start_time  !== '' && pedidos.arrival_time === '' && pedidos.end_time === ''?
                                                             <strong style={{color:'red'}}>En espera</strong>
