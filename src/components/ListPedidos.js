@@ -57,6 +57,7 @@ class ListPedidos extends Component{
         this.timeChangeLlegada = this.timeChangeLlegada.bind(this);
         this.timeChangeFin = this.timeChangeFin.bind(this);
         this.onClienteSelecte  = this.onClienteSelecte.bind(this);
+        this.onCadeteSelecte  = this.onCadeteSelecte.bind(this);
         this.hiddenModalEditarPedido = this.hiddenModalEditarPedido.bind(this);
         this.handlePageChange    = this.handlePageChange.bind(this);
         const apitoken = sessionStorage['apitoken'];
@@ -70,6 +71,7 @@ class ListPedidos extends Component{
             timeEntregaInicio:'',
             timeLlegadaPedido:'',
             timeFinPedido:'',
+            idTable : 0,
             nombreCadete:'',
             apiToken : apitoken,
             showHoraInicio:false,
@@ -371,17 +373,17 @@ class ListPedidos extends Component{
         }
     }
 
-    editarPedidoDetalle(idpedido,idcadete,idcliente,cliete_name,direccion,start_pedido,arrival_time,end_time,comision_empresa,comision_motomandado,order_title,order_description,fecha_order,total_compra,categoria_pedido_id,lugar_retiro,lugar_entrega){
-       
+    editarPedidoDetalle(idtable,idpedido,idcadete,idcliente,cliete_name,direccion,start_pedido,arrival_time,end_time,comision_empresa,comision_motomandado,order_title,order_description,fecha_order,total_compra,categoria_pedido_id,lugar_retiro,lugar_entrega){
+        
         this.setState({
+            idTable:idtable,
             showModalEditarPedido:true,
             showFormEditarPedido:true,
             showLoadingEditarPedido:false,
             showHoraLlegada:false,
             showHoraFin:false,
             idPedido:idpedido,
-            timeEntregaInicio :start_pedido,
-            timeLlegadaPedido:arrival_time,
+            timeEntregaInicio:start_pedido,
             timeFinPedido : end_time,
             amountPedido:total_compra,
             clienteName:cliete_name,
@@ -395,12 +397,60 @@ class ListPedidos extends Component{
             categoriaPedidoId:categoria_pedido_id,
             lugarRetiroPedido:lugar_retiro,
             lugarEntregaPedido:lugar_entrega
-        })
+        });
+
+        //alert(this.state.idTable)
+
+        this.getTimeLlegadaPedido(idtable,arrival_time);
+        this.getTimeFinPedido(idtable,end_time);
         //Buscar cadete
         this.getCadeteProfile(idcadete);
     }
 
+
+    getTimeLlegadaPedido(idtable,arrivalTime){
+        
+        if(arrivalTime === ''){
+            var lista_pedidos = document.getElementById("pedidos");
+            let hora_inicio = lista_pedidos.rows[idtable].cells[6].innerHTML;
+
+            if(hora_inicio === '<span>-</span>'){
+                //alert("Es igual a <span>-</span>");
+            }else{
+                //alert(hora_inicio);
+                this.setState({
+                    timeLlegadaPedido :arrivalTime
+                })
+            }
+        }else{
+            this.setState({
+                timeLlegadaPedido :arrivalTime,
+            })
+        }
+    }
     
+
+    getTimeFinPedido(idtable,endTime){
+        
+        if(endTime === ''){
+            var lista_pedidos = document.getElementById("pedidos");
+            let hora_fin = lista_pedidos.rows[idtable].cells[7].innerHTML;
+
+            if(hora_fin === '<span>-</span>'){
+                //alert("Hora fin Es igual a <span>-</span>");
+            }else{
+                this.setState({
+                    timeFinPedido:hora_fin
+                });
+                
+            }
+        }else{
+            this.setState({
+                timeFinPedido:endTime
+            });
+            //alert(endTime)
+        }
+    }
 
     getCadeteProfile(id){
         let cadete = this.state.listadoCadetes.filter(function(cadetes){
@@ -581,11 +631,11 @@ class ListPedidos extends Component{
                 showLoadingGif:false
             });
             var lista = document.getElementById("pedidos");
-            lista.rows[idTable].cells[6].innerHTML=hora_fin;
-            lista.rows[idTable].cells[3].innerHTML="<strong style=color:green>Finalizado</strong>";
+            lista.rows[idTable].cells[7].innerHTML=hora_fin;
+            lista.rows[idTable].cells[4].innerHTML="<strong style=color:green>Finalizado</strong>";
         })
 
-
+        this.hiddenModalEditarPedido();
 
     }
 
@@ -601,11 +651,11 @@ class ListPedidos extends Component{
                 showLoadingGif:false
             });
             var lista = document.getElementById("pedidos");
-            lista.rows[idTable].cells[5].innerHTML=hora_init;
-            lista.rows[idTable].cells[3].innerHTML="<strong style=color:blue>En curso</strong>";
+            lista.rows[idTable].cells[6].innerHTML=hora_init;
+            lista.rows[idTable].cells[4].innerHTML="<strong style=color:blue>En curso</strong>";
         })
+        this.hiddenModalEditarPedido();
 
-        
     }
 
     onClienteSelecte(idcliente) {
@@ -613,8 +663,18 @@ class ListPedidos extends Component{
         var cliente = this.state.listadoClientes.filter(function(clientes){
             return clientes.id == idcliente;
         })
-        console.log(cliente);
+        //console.log(cliente);
         this.completarDatosCliente(cliente[0].id,cliente[0].name,cliente[0].adress);
+        
+    }
+
+    onCadeteSelecte(idcadete) {
+        //alert("idcadete "+idcadete);
+        if(idcadete !== ''){
+            this.setState({
+                cadeteId:idcadete
+            })
+        }
         
     }
 
@@ -800,9 +860,19 @@ class ListPedidos extends Component{
                                                     <td><center><strong style={{color:'red'}}>${pedidos.order_fee_mv}</strong></center></td>
                                                     <td>
                                                         <center>
-                                                            <Button bsStyle="primary" onClick={()=>this.editarPedidoDetalle(pedidos.id,pedidos.cadete_id,pedidos.cliente_id,pedidos.cliente_name,pedidos.adress,pedidos.start_time,pedidos.arrival_time,pedidos.end_time,pedidos.order_fee_mv,pedidos.order_fee_cadet,pedidos.order_title,pedidos.order_description,pedidos.fecha_order,pedidos.amount,pedidos.categoria_pedido_id,pedidos.lugar_retiro,pedidos.lugar_entrega)}> VER</Button>
-                                                            <Button variant="success" onClick={()=>this.initHoraPedido(item+1,pedidos.id)} style={{marginLeft:10,marginRight:10}}>IN </Button>
-                                                            <Button variant="warning" onClick={()=>this.endHoraPedido(item+1,pedidos.id)}>Fin </Button>
+                                                            <Button bsStyle="primary" onClick={()=>this.editarPedidoDetalle(item+1,pedidos.id,pedidos.cadete_id,pedidos.cliente_id,pedidos.cliente_name,pedidos.adress,pedidos.start_time,pedidos.arrival_time,pedidos.end_time,pedidos.order_fee_mv,pedidos.order_fee_cadet,pedidos.order_title,pedidos.order_description,pedidos.fecha_order,pedidos.amount,pedidos.categoria_pedido_id,pedidos.lugar_retiro,pedidos.lugar_entrega)}> VER</Button>
+                                                            {pedidos.arrival_time  !== '' ?
+                                                               null 
+                                                            :
+                                                                <Button variant="success" onClick={()=>this.initHoraPedido(item+1,pedidos.id)} style={{marginLeft:10,marginRight:10}}>IN {pedidos.arrival_time}</Button>
+
+                                                            }
+                                                            {pedidos.end_time  !== '' ?
+                                                                null
+                                                            :
+
+                                                                <Button variant="warning" onClick={()=>this.endHoraPedido(item+1,pedidos.id)}>Fin </Button>
+                                                            }
                                                         </center>
                                                     </td>
                                                 </tr>
@@ -846,6 +916,44 @@ class ListPedidos extends Component{
                                     <div className="row">
                                         <div className="col-md-6 pr-1">
                                             <div class="form-group">
+                                                <label>Cadete</label>
+                                                <Select
+                                                    showSearch
+                                                    dropdownMenuStyle={{height:40}}
+                                                    placeholder="Buscar cadete"
+                                                    optionFilterProp="children"
+                                                    defaultValue={1}
+                                                    onChange={this.onCadeteSelecte}
+                                                    onFocus={this.onFocus}
+                                                    onBlur={this.onBlur}
+                                                    onSearch={this.onSearch}
+                                                    filterOption={(input, option) =>
+                                                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                    }
+                                                >
+                                                    {this.state.listadoCadetes.map((cadete,item)=>
+                                                        <option key={item+1} value={cadete.id}>{cadete.name}</option>
+                                                    )}
+                                                </Select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 pl-1">
+                                            <div class="form-group">
+                                                <label>Hora recepcion</label>
+                                                <input type="text" name="timeEntregaInicio" class="form-control" placeholder="Hora.." value={this.state.timeEntregaInicio} onChange={this.handleChange.bind(this)} onClick={()=>this.showHorario(1)}/>
+                                                {this.state.showHoraInicio &&
+                                                    <TimeKeeper
+                                                        switchToMinuteOnHourSelect={true}
+                                                        time={this.state.timeEntregaInicio}
+                                                        onChange={this.timeChangeInicio}
+                                                    />
+                                                } 
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="row">
+                                        <div className="col-md-6 pr-1">
+                                            <div class="form-group">
                                                 <label>Cliente</label>
                                                 <Select
                                                     showSearch
@@ -871,32 +979,6 @@ class ListPedidos extends Component{
                                             <div class="form-group">
                                                 <label>Direccion</label>
                                                 <input type="text" name="addressPedido" class="form-control" placeholder="Direccion.." onChange={this.handleChange.bind(this)} value={this.state.addressPedido}/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div className="row">
-                                        <div className="col-md-6 pr-1">
-                                            <div class="form-group">
-                                                <label>Cadete</label>
-                                                <select className="form-control" value={this.state.cadeteId} onChange={this.cambiarCadete.bind(this)}>
-                                                    <option value="0">Elegir</option>
-                                                    {this.state.listadoCadetes.map((cadetes,item)=>
-                                                        <option key={item+1} value={cadetes.id}>{cadetes.name}</option>  
-                                                    )}
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-6 pl-1">
-                                            <div class="form-group">
-                                                <label>Hora recepcion</label>
-                                                <input type="text" name="timeEntregaInicio" class="form-control" placeholder="Hora.." value={this.state.timeEntregaInicio} onChange={this.handleChange.bind(this)} onClick={()=>this.showHorario(1)}/>
-                                                {this.state.showHoraInicio &&
-                                                    <TimeKeeper
-                                                        switchToMinuteOnHourSelect={true}
-                                                        time={this.state.timeEntregaInicio}
-                                                        onChange={this.timeChangeInicio}
-                                                    />
-                                                } 
                                             </div>
                                         </div>
                                     </div>
@@ -997,6 +1079,59 @@ class ListPedidos extends Component{
                                     <div className="row">
                                         <div className="col-md-4 pr-1">
                                             <div class="form-group">
+                                                <label style={{fontWeight:'bold',color:'gray'}}>Cadete</label>
+                                                <Select
+                                                    showSearch
+                                                    dropdownMenuStyle={{height:40}}
+                                                    placeholder="Buscar cadete"
+                                                    optionFilterProp="children"
+                                                    defaultValue={1}
+                                                    onChange={this.onCadeteSelecte}
+                                                    defaultValue={this.state.cadeteId}
+                                                    onFocus={this.onFocus}
+                                                    onBlur={this.onBlur}
+                                                    onSearch={this.onSearch}
+                                                    filterOption={(input, option) =>
+                                                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                    }
+                                                >
+                                                    {this.state.listadoCadetes.map((cadete,item)=>
+                                                        <option key={item+1} value={cadete.id}>{cadete.name}</option>
+                                                    )}
+                                                </Select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 pl-1">
+                                            <div class="form-group">
+                                                <label style={{fontWeight:'bold',color:'gray'}}>Hora Inicio</label>
+                                                <input type="text" name="timeLlegadaPedido" class="form-control" placeholder="inicio.." value={this.state.timeLlegadaPedido} onChange={this.handleChange.bind(this)} onClick={()=>this.showHorario(2)}/>
+                                                {this.state.showHoraLlegada &&
+                                                    <TimeKeeper
+                                                        switchToMinuteOnHourSelect={true}
+                                                        time={this.state.timeLlegadaPedido}
+                                                        onChange={this.timeChangeLlegada}
+                                                    />
+                                                } 
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 pl-1">
+                                            <div class="form-group">
+                                                <label style={{fontWeight:'bold',color:'gray'}}>Hora fin</label>
+                                                <input type="text" name="timeLlegadaPedido" class="form-control" placeholder="Fin.." value={this.state.timeFinPedido} onChange={this.handleChange.bind(this)} onClick={()=>this.showHorario(3)}/>
+                                                {this.state.showHoraFin &&
+                                                    <TimeKeeper
+                                                        switchToMinuteOnHourSelect={true}
+                                                        time={this.state.timeFinPedido}
+                                                        onChange={this.timeChangeFin}
+                                                    />
+                                                } 
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <hr/>
+                                    <div className="row">
+                                        <div className="col-md-4 pr-1">
+                                            <div class="form-group">
                                                 <label style={{fontWeight:'bold',color:'gray'}}>Cliente</label>
                                                 <Select
                                                     showSearch
@@ -1028,45 +1163,6 @@ class ListPedidos extends Component{
                                             <div class="form-group">
                                                 <label style={{fontWeight:'bold',color:'gray'}}>Hora recepcion</label>
                                                 <input type="text" name="timeEntregaInicio" class="form-control" placeholder="Inicio.." onChange={this.handleChange.bind(this)} value={this.state.timeEntregaInicio}/>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <hr/>
-                                    <div className="row">
-                                        <div className="col-md-4 pr-1">
-                                            <div class="form-group">
-                                                <label style={{fontWeight:'bold',color:'gray'}}>Cadete</label>
-                                                <select className="form-control" value={this.state.cadeteId} onChange={this.cambiarCadete.bind(this)}>
-                                                    {this.state.listadoCadetes.map((cadetes,item)=>
-                                                        <option key={item+1} value={cadetes.id}>{cadetes.name}</option>  
-                                                    )}
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 pl-1">
-                                            <div class="form-group">
-                                                <label style={{fontWeight:'bold',color:'gray'}}>Hora Inicio</label>
-                                                <input type="text" name="timeLlegadaPedido" class="form-control" placeholder="inicio.." value={this.state.timeLlegadaPedido} onChange={this.handleChange.bind(this)} onClick={()=>this.showHorario(2)}/>
-                                                {this.state.showHoraLlegada &&
-                                                    <TimeKeeper
-                                                        switchToMinuteOnHourSelect={true}
-                                                        time={this.state.timeLlegadaPedido}
-                                                        onChange={this.timeChangeLlegada}
-                                                    />
-                                                } 
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 pl-1">
-                                            <div class="form-group">
-                                                <label style={{fontWeight:'bold',color:'gray'}}>Hora fin</label>
-                                                <input type="text" name="timeLlegadaPedido" class="form-control" placeholder="Fin.." value={this.state.timeFinPedido} onChange={this.handleChange.bind(this)} onClick={()=>this.showHorario(3)}/>
-                                                {this.state.showHoraFin &&
-                                                    <TimeKeeper
-                                                        switchToMinuteOnHourSelect={true}
-                                                        time={this.state.timeFinPedido}
-                                                        onChange={this.timeChangeFin}
-                                                    />
-                                                } 
                                             </div>
                                         </div>
                                     </div>
@@ -1143,6 +1239,8 @@ class ListPedidos extends Component{
                     </Modal.Body>
                     <Modal.Footer>
                         <Button onClick={()=>this.hiddenModalEditarPedido()} variant="secondary" style={{marginTop:10}}>Salir</Button>
+                        <Button onClick={()=>this.initHoraPedido(this.state.idTable,this.state.idPedido)} variant="btn btn-warning" style={{marginTop:10}}>Iniciar pedido {this.state.idTable}</Button>
+                        <Button onClick={()=>this.endHoraPedido(this.state.idTable,this.state.idPedido)} variant="btn btn-danger" style={{marginTop:10}}>Finalizar pedido</Button>
                         <Button onClick={()=>this.updatePedido()} variant="btn btn-success" style={{marginTop:10}}>Actualizar pedido</Button>
                     </Modal.Footer>
                 </Modal>  
