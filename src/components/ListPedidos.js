@@ -794,6 +794,7 @@ class ListPedidos extends Component{
                                         <thead>
                                             <tr>
                                                 <th>Id</th>
+                                                <th>Fecha</th>
                                                 <th>Cliente</th>
                                                 <th>Direccion</th>
                                                 <th>Cadete</th>
@@ -818,6 +819,7 @@ class ListPedidos extends Component{
                                                 this.state.listadoPedidos.map((pedidos,item)=>
                                                 <tr key={item+1}>
                                                     <td>{pedidos.id}</td>
+                                                    <td width="90">{pedidos.fecha_order}</td>
                                                     <td><strong>{pedidos.cliente_name}</strong></td>
                                                     <td>{pedidos.adress.toLowerCase()}</td>
                                                     <td>{pedidos.cadete}</td>
