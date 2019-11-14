@@ -9,7 +9,7 @@ import Autosuggest        from 'react-autosuggest';
 import api                from '../config/apiserver.js'
 import loadingGif         from '../styles/img/loading.gif'
 import Pagination         from "react-js-pagination";
-import {Select} from 'antd';
+import {Select, Alert} from 'antd';
 
 moment.locale('es');
 
@@ -119,6 +119,7 @@ class ListPedidos extends Component{
     }
 
     modalNuevoPedido(){
+        //alert(this.state.clientePedidoId);
         this.setState({
             showModalNuevoPedido:true,
             showFormPedidoNuevo:true,
@@ -384,7 +385,8 @@ class ListPedidos extends Component{
             showHoraFin:false,
             idPedido:idpedido,
             timeEntregaInicio:start_pedido,
-            timeFinPedido : end_time,
+            timeFinPedido : '',
+            timeLlegadaPedido:'',
             amountPedido:total_compra,
             clienteName:cliete_name,
             addressPedido:direccion,
@@ -409,17 +411,20 @@ class ListPedidos extends Component{
 
 
     getTimeLlegadaPedido(idtable,arrivalTime){
-        
+        //alert(idtable+" "+arrivalTime);
         if(arrivalTime === ''){
             var lista_pedidos = document.getElementById("pedidos");
-            let hora_inicio = lista_pedidos.rows[idtable].cells[6].innerHTML;
+            let hora_inicio = lista_pedidos.rows[idtable].cells[7].innerHTML;
 
             if(hora_inicio === '<span>-</span>'){
                 //alert("Es igual a <span>-</span>");
+                this.setState({
+                    timeLlegadaPedido :''
+                })
             }else{
                 //alert(hora_inicio);
                 this.setState({
-                    timeLlegadaPedido :arrivalTime
+                    timeLlegadaPedido :hora_inicio
                 })
             }
         }else{
@@ -431,20 +436,28 @@ class ListPedidos extends Component{
     
 
     getTimeFinPedido(idtable,endTime){
-        
+        //console.log("idtable "+idtable+" endTime "+endTime);
+        //alert(idtable+" "+endTime)
         if(endTime === ''){
+            
             var lista_pedidos = document.getElementById("pedidos");
-            let hora_fin = lista_pedidos.rows[idtable].cells[7].innerHTML;
-
+            let hora_fin = lista_pedidos.rows[idtable].cells[8].innerHTML;
+            //console.log("hora_fin "+hora_fin);
             if(hora_fin === '<span>-</span>'){
                 //alert("Hora fin Es igual a <span>-</span>");
+                this.setState({
+                    timeFinPedido:''
+                });
+
             }else{
+
                 this.setState({
                     timeFinPedido:hora_fin
                 });
                 
             }
         }else{
+            
             this.setState({
                 timeFinPedido:endTime
             });
@@ -459,10 +472,19 @@ class ListPedidos extends Component{
 
         });
 
-        this.setState({
-            nombreCadete:cadete[0].name,
-            cadeteId:cadete[0].id
-        })
+        if(cadete.length === 0){
+            this.setState({
+                nombreCadete:'Sin asignar',
+                cadeteId:1
+            });
+            this.getCadetes();
+        }else{
+            this.setState({
+                nombreCadete:cadete[0].name,
+                cadeteId:cadete[0].id
+            })
+        }
+        
     
     }
 
@@ -631,8 +653,8 @@ class ListPedidos extends Component{
                 showLoadingGif:false
             });
             var lista = document.getElementById("pedidos");
-            lista.rows[idTable].cells[7].innerHTML=hora_fin;
-            lista.rows[idTable].cells[4].innerHTML="<strong style=color:green>Finalizado</strong>";
+            lista.rows[idTable].cells[8].innerHTML=hora_fin;
+            lista.rows[idTable].cells[5].innerHTML="<strong style=color:green>Finalizado</strong>";
         })
 
         this.hiddenModalEditarPedido();
@@ -651,8 +673,8 @@ class ListPedidos extends Component{
                 showLoadingGif:false
             });
             var lista = document.getElementById("pedidos");
-            lista.rows[idTable].cells[6].innerHTML=hora_init;
-            lista.rows[idTable].cells[4].innerHTML="<strong style=color:blue>En curso</strong>";
+            lista.rows[idTable].cells[7].innerHTML=hora_init;
+            lista.rows[idTable].cells[5].innerHTML="<strong style=color:blue>En curso</strong>";
         })
         this.hiddenModalEditarPedido();
 
@@ -669,7 +691,7 @@ class ListPedidos extends Component{
     }
 
     onCadeteSelecte(idcadete) {
-        //alert("idcadete "+idcadete);
+        alert("idcadete "+idcadete);
         if(idcadete !== ''){
             this.setState({
                 cadeteId:idcadete
@@ -1241,7 +1263,7 @@ class ListPedidos extends Component{
                     </Modal.Body>
                     <Modal.Footer>
                         <Button onClick={()=>this.hiddenModalEditarPedido()} variant="secondary" style={{marginTop:10}}>Salir</Button>
-                        <Button onClick={()=>this.initHoraPedido(this.state.idTable,this.state.idPedido)} variant="btn btn-warning" style={{marginTop:10}}>Iniciar pedido {this.state.idTable}</Button>
+                        <Button onClick={()=>this.initHoraPedido(this.state.idTable,this.state.idPedido)} variant="btn btn-warning" style={{marginTop:10}}>Iniciar pedido</Button>
                         <Button onClick={()=>this.endHoraPedido(this.state.idTable,this.state.idPedido)} variant="btn btn-danger" style={{marginTop:10}}>Finalizar pedido</Button>
                         <Button onClick={()=>this.updatePedido()} variant="btn btn-success" style={{marginTop:10}}>Actualizar pedido</Button>
                     </Modal.Footer>

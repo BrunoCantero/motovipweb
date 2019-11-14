@@ -204,7 +204,7 @@ class ListReportes extends Component{
             
             //alert(this.state.cadeteIdSelected+" "+this.state.fechaSeleccionadaHastaCadete+" "+this.state.fechaSeleccionadaDesdeCadete);
             let url_api = api.server+'reportes/cadetes/'+this.state.cadeteIdSelected+'/'+this.state.fechaSeleccionadaDesdeCadete+' '+this.state.horaCadeteDesde+ '/'+this.state.fechaSeleccionadaHastaCadete+' '+this.state.horaCadeteHasta;
-             //console.log(url_api); 
+            //console.log(url_api); 
             fetch(url_api,{
                 method:'GET',
                 headers:{
@@ -253,7 +253,7 @@ class ListReportes extends Component{
               
               //alert(this.state.cadeteIdSelected+" "+this.state.fechaSeleccionadaHastaCadete+" "+this.state.fechaSeleccionadaDesdeCadete);
               let url_api = api.server+'reportes/ganancias_cadetes/'+this.state.fechaSeleccionadaDesdeCadetePorGanancias+' '+this.state.horaCadeteDesdePorGanancias+ '/'+this.state.fechaSeleccionadaHastaCadetePorGanancias+' '+this.state.horaCadeteHastaPorGanancias;
-               //console.log(url_api); 
+              //console.log(url_api); 
               fetch(url_api,{
                   method:'GET',
                   headers:{
@@ -377,6 +377,7 @@ class ListReportes extends Component{
             //alert(this.state.clienteIdSelected+" "+this.state.fechaSeleccionadaDesdeCliente+" "+this.state.fechaSeleccionadaHastaCliente);
             //alert(this.state.cadeteIdSelected+" "+this.state.fechaSeleccionadaHastaCadete+" "+this.state.fechaSeleccionadaDesdeCadete);
             let url_api = api.server+'reportes/clientes/'+this.state.clienteIdSelected+'/'+this.state.fechaSeleccionadaDesdeCliente+'/'+this.state.fechaSeleccionadaHastaCliente;
+            console.log(url_api);
             fetch(url_api,{
                 method:'GET',
                 headers:{
@@ -385,10 +386,10 @@ class ListReportes extends Component{
                 }
             })
             .then(response=>response.json())
-            .then(data=>{
-                //console.log(data);
+            .then(responseData=>{
+                console.log(responseData);
                 this.setState({
-                    listadoReporteCliente:data,
+                    listadoReporteCliente:responseData,
                     showLoadingClienteGif:false,
                     showListadoReporteCliente:true
                 })
