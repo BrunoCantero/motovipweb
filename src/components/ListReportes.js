@@ -582,7 +582,7 @@ class ListReportes extends Component{
                                             <div class="card">
                                                 <div class="col-md-11 pr-1">
                                                     <div class="form-group">
-                                                        <label>Cadete</label>
+                                                        <label>Clientes</label>
                                                         <select class="form-control" value={this.state.clienteIdSelected} onChange={this.seleccionCliente.bind(this)}>
                                                             <option value="0">Elegir</option>
                                                             {this.state.listadoClientes.map((clientes,item)=>

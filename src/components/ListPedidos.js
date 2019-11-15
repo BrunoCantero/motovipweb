@@ -691,7 +691,7 @@ class ListPedidos extends Component{
     }
 
     onCadeteSelecte(idcadete) {
-        alert("idcadete "+idcadete);
+        //alert("idcadete "+idcadete);
         if(idcadete !== ''){
             this.setState({
                 cadeteId:idcadete
