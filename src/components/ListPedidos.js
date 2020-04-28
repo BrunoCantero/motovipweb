@@ -6,6 +6,7 @@ import moment             from 'moment';
 import TimeKeeper         from 'react-timekeeper';
 import Lottie             from 'react-lottie';
 import Autosuggest        from 'react-autosuggest';
+import SocketIOClient     from 'socket.io-client';
 import api                from '../config/apiserver.js'
 import loadingGif         from '../styles/img/loading.gif'
 import Pagination         from "react-js-pagination";
@@ -109,6 +110,7 @@ class ListPedidos extends Component{
             totalItemsCount:1,
             pageRangeDisplayed:20
         }
+        this.socket = SocketIOClient('https://app.appmorfi.com:5000');
     }
 
 
@@ -126,6 +128,7 @@ class ListPedidos extends Component{
             showLoadingPedido:false,
             addressPedido:'',
             amountPedido:'',
+            cadeteId:1,
             orderFeeMotovip:0,
             orderFeeCadete:0,
             orderDescription:'',
@@ -340,6 +343,7 @@ class ListPedidos extends Component{
             .then((responseJson)=>{
                 this.sleep(2000).then(() => {
                     // Do something after the sleep!
+                    this.notificarNuevoPedidoSocket();
                     this.setState({
                         showFormPedidoNuevo:false,
                         showLoadingPedido:false
@@ -360,7 +364,19 @@ class ListPedidos extends Component{
         } else {
             return false
         }
-    }    
+    }
+    
+    notificarNuevoPedidoSocket(){
+        if(this.state.cadeteId !== 1){
+            const dataOrder = [{
+                "action" : "new_order",
+                "mensaje" : "new order",
+                "id_cadete":this.state.cadeteId
+            }]
+    
+            this.socket.emit('new_order',dataOrder);            
+        }
+    }
 
     calcularComisiones(){
         
