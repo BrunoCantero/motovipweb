@@ -83,6 +83,11 @@ class Login extends Component{
                 }
             })
             .catch((error)=>{
+                this.setState({
+                    loading:false,
+                    showMensajeUsuario:true,
+                    mensajeUsuario:'Ha ocurrido un error, Intente nuevamente'
+                })
                 console.log(error);
             })
         }

@@ -43,6 +43,12 @@ class ListModulos extends Component{
                                 <p>REPORTES</p>
                             </NavLink>
                         </li>
+                        <li className="nav-item">
+                            <NavLink  exac to='/users' className="nav-link" activeStyle={{ color: 'gray',backgroundColor:'#fff',fontWeight:'bold' }}>
+                                <i className="nc-icon nc-single-02"></i>
+                                <p>USUARIOS</p>
+                            </NavLink>
+                        </li>
                     </ul>
                 </div>
             </div>
